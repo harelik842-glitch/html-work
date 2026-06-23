@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- harel-dadon-318988326 -->
 <html lang="he" dir="rtl">
 <head>
+    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>פייסבוק - התחברות או הרשמה</title>
@@ -24,17 +25,19 @@
         <div class="col-md-6 d-flex justify-content-center justify-content-md-end">
             
            <div class="p-4 bg-white rounded-3 shadow border-0" style="width: 100%; max-width: 400px;">
-    <form>
+    <form id="loginForm" novalidate>
         <div class="mb-3">
-            <input type="email" class="form-control form-control-lg fs-6" placeholder="אימייל או מספר טלפון" required>
+            <input type="email" id="email" class="form-control form-control-lg fs-6" placeholder="אימייל או מספר טלפון" required>
+            <div id="emailError" class="text-danger small mt-1"></div>
         </div>
         
         <div class="mb-3">
-            <input type="password" class="form-control form-control-lg fs-6" placeholder="סיסמה" required>
+            <input type="password" id="password" class="form-control form-control-lg fs-6" placeholder="סיסמה" required>
+            <div id="passwordError" class="text-danger small mt-1"></div>
         </div>
         
         <div class="d-grid gap-2 mb-3">
-            <button class="btn btn-primary btn-lg fw-bold fs-5" type="button">התחברות</button>
+            <button class="btn btn-primary btn-lg fw-bold fs-5" type="submit">התחברות</button>
         </div>
         
         <div class="text-center mb-3">
@@ -44,13 +47,16 @@
         <hr class="text-muted my-4">
         
         <div class="text-center">
-            <button class="btn btn-success btn-lg fw-bold fs-6 px-4" type="button">יצירת חשבון חדש</button>
+           <a href="register.html">
+    <button class="btn btn-success btn-lg fw-bold fs-6 px-4" type="button">יצירת חשבון חדש</button>
+</a>
         </div>
     </form>
 </div>
-        </div>
+        
 
     </div>
 </div>
+<script src="login.js"></script>
 </body>
 </html>
