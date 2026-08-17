@@ -1,9 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
-
 const app = express();
+app.use(session({
+    secret: 'facebook-secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(express.json());
 const PORT = 3000;
 mongoose.connect(process.env.MONGO_URI)
@@ -13,7 +19,13 @@ mongoose.connect(process.env.MONGO_URI)
     .catch((error) => {
         console.log('MongoDB connection error:', error);
     });
+app.get('/file.html', (req, res, next) => {
+    if (!req.session.userId) {
+        return res.redirect('/index.html');
+    }
 
+    next();
+});
 app.use(express.static(__dirname));
 
 app.get('/test', (req, res) => {
