@@ -215,24 +215,59 @@ async function loadComments() {
                 'bg-light rounded p-2 mb-2';
 
            commentElement.innerHTML = `
-    <div>
-        <strong>
-            ${comment.author?.firstName || ''}
-            ${comment.author?.lastName || ''}
-        </strong>
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <div>
+                <strong>
+                    ${comment.author?.firstName || ''}
+                    ${comment.author?.lastName || ''}
+                </strong>
 
-        <span class="text-muted small me-2">
-            ${timeAgo(comment.createdAt)}
-        </span>
+                <span class="text-muted small me-2">
+                    ${timeAgo(comment.createdAt)}
+                </span>
+            </div>
+
+            <div>
+                ${comment.text}
+            </div>
+        </div>
+
+        <button
+            class="btn p-0 border-0 bg-transparent text-secondary delete-comment-btn"
+            data-id="${comment._id}">
+            <i class="bi bi-trash3"></i>
+        </button>
     </div>
-
-    <div>
-        ${comment.text}
-    </div>
-
-            `;
+`;
 
             commentsList.appendChild(commentElement);
+
+        const deleteCommentButton =
+    commentElement.querySelector('.delete-comment-btn');
+
+deleteCommentButton.addEventListener('click', async function () {
+    const commentId = this.dataset.id;
+
+    try {
+        const response = await fetch(`/api/comments/${commentId}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            loadComments();
+        } else {
+            alert(data.message || 'אירעה שגיאה במחיקת התגובה');
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert('לא ניתן להתחבר לשרת');
+    }
+});
+
         });
 
     } catch (error) {
