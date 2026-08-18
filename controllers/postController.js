@@ -23,6 +23,23 @@ const createPost = async (req, res) => {
     }
 };
 
+const getPosts = async (req, res) => {
+    try {
+        const posts = await Post.find()
+            .populate('author', 'username firstName lastName')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(posts);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting posts',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
-    createPost
+    createPost,
+    getPosts
 };
