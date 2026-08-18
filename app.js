@@ -4,6 +4,7 @@ const session = require('express-session');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 const app = express();
 app.use(session({
     secret: 'facebook-secret-key',
@@ -35,6 +36,7 @@ app.get('/test', (req, res) => {
 
 app.use('/api', userRoutes);
 app.use('/api', postRoutes);
+app.use('/api', commentRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

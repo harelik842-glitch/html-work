@@ -83,10 +83,11 @@ async function loadPosts() {
     </button>
 
      <button
-        class="btn p-0 border-0 bg-transparent text-secondary d-flex align-items-center gap-1">
-        <span>0</span>
-        <i class="bi bi-chat fs-5"></i>
-    </button>
+    class="btn p-0 border-0 bg-transparent text-secondary d-flex align-items-center gap-1 comment-post-btn"
+    data-id="${post._id}">
+    <span class="comment-count">0</span>
+    <i class="bi bi-chat fs-5"></i>
+</button>
 
     <button
         class="btn p-0 border-0 bg-transparent text-secondary d-flex align-items-center gap-1 like-post-btn"
@@ -97,6 +98,24 @@ async function loadPosts() {
 
 
 
+
+</div>
+<div class="comments-section mt-3" data-post-id="${post._id}" style="display: none;">
+
+    <div class="comments-list mb-2"></div>
+
+    <div class="d-flex gap-2">
+        <input
+            type="text"
+            class="form-control comment-input"
+            placeholder="כתוב תגובה...">
+
+        <button
+            class="btn btn-primary add-comment-btn"
+            data-id="${post._id}">
+            <i class="bi bi-send"></i>
+        </button>
+    </div>
 
 </div>
     </div>
@@ -145,7 +164,8 @@ likeButton.addEventListener('click', async function () {
         const data = await response.json();
 
         if (response.ok) {
-            loadPosts();
+            const likeCount = likeButton.querySelector('span');
+            likeCount.textContent = data.likesCount;
         } else {
             alert(data.message || 'אירעה שגיאה בעדכון הלייק');
         }
@@ -155,6 +175,152 @@ likeButton.addEventListener('click', async function () {
         alert('לא ניתן להתחבר לשרת');
     }
 });
+
+const commentButton =
+    postElement.querySelector('.comment-post-btn');
+
+const commentsSection =
+    postElement.querySelector('.comments-section');
+
+commentButton.addEventListener('click', function () {
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+            loadComments();
+
+    } else {
+        commentsSection.style.display = 'none';
+    }
+});
+
+
+async function loadComments() {
+    try {
+        const response = await fetch(`/api/posts/${post._id}/comments`);
+        const comments = await response.json();
+
+        const commentsList =
+            postElement.querySelector('.comments-list');
+
+        const commentCount =
+            postElement.querySelector('.comment-count');
+
+        commentsList.innerHTML = '';
+
+        commentCount.textContent = comments.length;
+
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+
+            commentElement.className =
+                'bg-light rounded p-2 mb-2';
+
+           commentElement.innerHTML = `
+    <div>
+        <strong>
+            ${comment.author?.firstName || ''}
+            ${comment.author?.lastName || ''}
+        </strong>
+
+        <span class="text-muted small me-2">
+            ${timeAgo(comment.createdAt)}
+        </span>
+    </div>
+
+    <div>
+        ${comment.text}
+    </div>
+
+            `;
+
+            commentsList.appendChild(commentElement);
+        });
+
+    } catch (error) {
+        console.error('Error loading comments:', error);
+    }
+}
+
+const addCommentButton =
+    postElement.querySelector('.add-comment-btn');
+
+const commentInput =
+    postElement.querySelector('.comment-input');
+
+addCommentButton.addEventListener('click', async function () {
+    const postId = this.dataset.id;
+    const text = commentInput.value.trim();
+
+    if (text === '') {
+        alert('יש לכתוב תגובה');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/posts/${postId}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            commentInput.value = '';
+            loadComments();
+        } else {
+            alert(data.message || 'אירעה שגיאה בהוספת התגובה');
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert('לא ניתן להתחבר לשרת');
+    }
+});
+
+
+function timeAgo(date) {
+    const now = new Date();
+    const created = new Date(date);
+
+    const seconds = Math.floor((now - created) / 1000);
+
+    if (seconds < 60) {
+        return 'עכשיו';
+    }
+
+    const minutes = Math.floor(seconds / 60);
+
+    if (minutes < 60) {
+        return `לפני ${minutes} דקות`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+
+    if (hours < 24) {
+        return `לפני ${hours} שעות`;
+    }
+
+    const days = Math.floor(hours / 24);
+
+    if (days < 30) {
+        return `לפני ${days} ימים`;
+    }
+
+    const months = Math.floor(days / 30);
+
+    if (months < 12) {
+        return `לפני ${months} חודשים`;
+    }
+
+    const years = Math.floor(months / 12);
+
+    return `לפני ${years} שנים`;
+}
+
         });
 
     } catch (error) {
