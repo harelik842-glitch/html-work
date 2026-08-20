@@ -28,6 +28,15 @@ app.get('/file.html', (req, res, next) => {
     }
 
     next();
+
+    app.get('/groups.html', (req, res, next) => {
+    if (!req.session.userId) {
+        return res.redirect('/index.html');
+    }
+
+    next();
+});
+
 });
 app.use(express.static(__dirname));
 

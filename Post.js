@@ -37,7 +37,7 @@ document.getElementById('publishPostBtn').addEventListener('click', async functi
 
 async function loadPosts() {
     try {
-        const response = await fetch('/api/posts');
+        const response = await fetch('/api/feed');
         const posts = await response.json();
 
         const postsContainer = document.getElementById('postsContainer');

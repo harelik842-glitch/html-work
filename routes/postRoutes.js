@@ -7,5 +7,6 @@ router.post('/posts', postController.createPost);
 router.get('/posts', postController.getPosts);
 router.delete('/posts/:id', postController.deletePost);
 router.put('/posts/:id/like', postController.toggleLike);
+router.get('/feed', postController.getFeedPosts);
 
 module.exports = router;

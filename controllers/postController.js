@@ -5,7 +5,8 @@ const createPost = async (req, res) => {
         const newPost = new Post({
             author: req.session.userId,
             text: req.body.text,
-            image: req.body.image
+            image: req.body.image,
+            group: req.body.group || null
         });
 
         const savedPost = await newPost.save();
@@ -26,8 +27,9 @@ const createPost = async (req, res) => {
 const getPosts = async (req, res) => {
     try {
         const posts = await Post.find()
-            .populate('author', 'username firstName lastName')
-            .sort({ createdAt: -1 });
+    .populate('author', 'username firstName lastName')
+    .populate('group', 'name')
+    .sort({ createdAt: -1 });
 
         res.status(200).json(posts);
 
@@ -117,9 +119,65 @@ const toggleLike = async (req, res) => {
     }
 };
 
+
+const getFeedPosts = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const Group = require('../models/Group');
+        const User = require('../models/User');
+
+        const currentUser = await User.findById(userId).select('friends');
+
+        const friendIds = currentUser.friends || [];
+
+        const myGroups = await Group.find({
+            members: userId
+        }).select('_id');
+
+        const myGroupIds = myGroups.map(group => group._id);
+
+        const posts = await Post.find({
+            $or: [
+                {
+                    group: null,
+                    author: {
+                        $in: [userId, ...friendIds]
+                    }
+                },
+                {
+                    group: {
+                        $in: myGroupIds
+                    }
+                }
+            ]
+        })
+            .populate('author', 'username firstName lastName')
+            .populate('group', 'name')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(posts);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting feed posts',
+            error: error.message
+        });
+    }
+};    
+   
+
+
 module.exports = {
     createPost,
     getPosts,
     deletePost,
-    toggleLike
+    toggleLike,
+    getFeedPosts
 };
