@@ -1,3 +1,28 @@
+async function loadCurrentUserImage() {
+    try {
+        const response = await fetch('/api/current-user');
+
+        if (!response.ok) {
+            return;
+        }
+
+        const user = await response.json();
+
+        if (!user.profileImage) {
+            return;
+        }
+
+        const images =
+            document.querySelectorAll('.current-user-profile-image');
+
+        images.forEach(image => {
+            image.src = user.profileImage;
+        });
+
+    } catch (error) {
+        console.error('Error loading current user image:', error);
+    }
+}
 document.getElementById('publishPostBtn').addEventListener('click', async function () {
     const postText = document.getElementById('postText').value.trim();
 
@@ -34,6 +59,27 @@ document.getElementById('publishPostBtn').addEventListener('click', async functi
     }
 });
 
+async function loadCurrentUserProfileImage() {
+    try {
+        const response = await fetch('/api/current-user');
+
+        if (!response.ok) {
+            return;
+        }
+
+        const user = await response.json();
+
+        const profileImage =
+            document.getElementById('currentUserProfileImage');
+
+        if (profileImage && user.profileImage) {
+            profileImage.src = user.profileImage;
+        }
+
+    } catch (error) {
+        console.error('Error loading current user image:', error);
+    }
+}
 
 async function loadPosts() {
     try {
@@ -52,16 +98,26 @@ async function loadPosts() {
     <div class="card-body">
 
         <div class="d-flex align-items-center gap-2 mb-3">
-            <img src="harel.jpg"
-                 alt="Profile"
-                 class="rounded-circle"
-                 width="40"
-                 height="40">
-
+            <a href="profile.html?userId=${post.author?._id}">
+    <img
+        src="${post.author?.profileImage || 'harel.jpg'}"
+        alt="Profile"
+        class="rounded-circle"
+        width="45"
+        height="45"
+        style="object-fit: cover; cursor: pointer;"
+    >
+</a>
             <div>
-                <strong>
-                    ${post.author?.firstName || ''} ${post.author?.lastName || ''}
-                </strong>
+                <a
+    href="profile.html?userId=${post.author?._id}"
+    style="text-decoration: none; color: inherit;"
+>
+    <strong>
+        ${post.author?.firstName || ''}
+        ${post.author?.lastName || ''}
+    </strong>
+</a>
 
                 <div class="text-muted small">
                     ${new Date(post.createdAt).toLocaleString('he-IL')}
@@ -365,3 +421,5 @@ function timeAgo(date) {
 
 
 loadPosts();
+loadCurrentUserProfileImage();
+loadCurrentUserImage();

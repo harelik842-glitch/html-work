@@ -224,10 +224,33 @@ const removeMember = async (req, res) => {
     }
 };
 
+
+const getGroupsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const groups = await Group.find({
+            members: userId
+        })
+        .populate('creator', 'username firstName lastName')
+        .populate('members', 'username firstName lastName')
+        .sort({ createdAt: -1 });
+
+        res.status(200).json(groups);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting user groups',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     createGroup,
     getGroups,
     joinGroup,
+    getGroupsByUserId,
     removeMember,
     getMyGroups,
     updateGroup

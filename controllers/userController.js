@@ -8,7 +8,8 @@ const createUser = async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            city: req.body.city
+            city: req.body.city,
+            birthday: req.body.birthday
         });
 
         const savedUser = await newUser.save();
@@ -71,7 +72,7 @@ const getCurrentUser = async (req, res) => {
         }
 
         const user = await User.findById(userId).select(
-            'username firstName lastName email city friends'
+            'username firstName lastName email city birthday friends profileImage coverImage'
         );
 
         if (!user) {
@@ -213,6 +214,139 @@ const removeFriend = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const { firstName, lastName, city , birthday, profileImage,
+                coverImage} = req.body;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {
+                
+              firstName,
+              lastName,
+              city,
+              ...(birthday !== undefined && { birthday }),
+              ...(profileImage !== undefined && { profileImage }),
+             ...(coverImage !== undefined && { coverImage })
+
+             },
+           
+            {
+                new: true,
+                runValidators: true
+            }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            message: 'Profile updated successfully',
+            user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error updating profile',
+            error: error.message
+        });
+    }
+};
+
+const getMyFriends = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const user = await User.findById(userId)
+            .populate(
+                'friends',
+                'username firstName lastName city profileImage'
+            );
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json(user.friends);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting friends',
+            error: error.message
+        });
+    }
+};
+
+const getUserById = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const user = await User.findById(userId).select(
+            'username firstName lastName city birthday friends profileImage coverImage'
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json(user);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting user',
+            error: error.message
+        });
+    }
+};
+
+
+const getFriendsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const user = await User.findById(userId)
+            .populate(
+                'friends',
+                'username firstName lastName city profileImage'
+            );
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json(user.friends);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting user friends',
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     createUser,
@@ -220,7 +354,11 @@ module.exports = {
     getCurrentUser,
     addFriend,
     getUsers,
-    removeFriend    
+    removeFriend,
+    updateProfile,
+    getMyFriends,
+    getUserById,
+    getFriendsByUserId
 };
 
 

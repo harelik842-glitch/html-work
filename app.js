@@ -13,7 +13,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 const PORT = 3000;
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {

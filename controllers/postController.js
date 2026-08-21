@@ -27,7 +27,7 @@ const createPost = async (req, res) => {
 const getPosts = async (req, res) => {
     try {
         const posts = await Post.find()
-    .populate('author', 'username firstName lastName')
+    .populate('author', 'username firstName lastName profileImage')
     .populate('group', 'name')
     .sort({ createdAt: -1 });
 
@@ -158,7 +158,7 @@ const getFeedPosts = async (req, res) => {
                 }
             ]
         })
-            .populate('author', 'username firstName lastName')
+            .populate('author', 'username firstName lastName profileImage')
             .populate('group', 'name')
             .sort({ createdAt: -1 });
 
@@ -172,12 +172,60 @@ const getFeedPosts = async (req, res) => {
     }
 };    
    
+const getMyPosts = async (req, res) => {
+    try {
+        const userId = req.session.userId;
 
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const posts = await Post.find({
+            author: userId
+        })
+            .populate('author', 'username firstName lastName profileImage')
+            .populate('group', 'name')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(posts);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting user posts',
+            error: error.message
+        });
+    }
+};
+
+const getPostsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const posts = await Post.find({
+            author: userId
+        })
+            .populate('author', 'username firstName lastName profileImage')
+            .populate('group', 'name')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(posts);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting user posts',
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     createPost,
     getPosts,
     deletePost,
+    getPostsByUserId,
+    getMyPosts,
     toggleLike,
     getFeedPosts
 };

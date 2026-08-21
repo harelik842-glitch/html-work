@@ -38,17 +38,27 @@ const userSchema = new mongoose.Schema({
         default: ''
     },
 
+    birthday: {
+        type: Date,
+        default: null
+    },
+
     profileImage: {
         type: String,
         default: ''
     },
+
+    coverImage: {
+    type: String,
+    default: ''
+},
 
     createdAt: {
         type: Date,
         default: Date.now
     },
 
-
+   
     friends: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

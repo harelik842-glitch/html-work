@@ -14,7 +14,8 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
         
         <div class="d-flex align-items-center">
-            <img src="harel.jpg" alt="Facebook Logo" width="40" height="40" class="me-2">
+            <img src="harel.jpg" alt="Facebook Logo" width="40" height="40" class="current-user-profile-image"">
+
             <input type="text" class="form-control" placeholder="Search Facebook" style="width: 200px;">
         </div>
 
@@ -30,7 +31,8 @@
             <a href="#" class="text-primary px-1 "><i class="bi bi-list"></i></a>
              <a href="#" class="text-primary px-1"><i class="bi bi-chat-dots-fill"></i></a>
             <a href="#" class="text-primary px-1"><i class="bi bi-bell-fill"></i></a>
-            <img src="harel.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
+            <img src="harel.jpg" alt="Profile" class="rounded-circle current-user-profile-image" width="40" height="40" >
+>
         </div>
 
     </div> </nav>
@@ -40,8 +42,8 @@
         <div class="col-lg-3 d-none d-lg-block">
             <div class="d-flex flex-column gap-1" style="position: sticky; top: 70px;">
                 
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-effect ">
-                    <img src="harel.jpg" alt="Profile" class="rounded-circle me-1" ms-5 width="36" height="36">
+                <a href="profile.html" class="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-effect ">
+                    <img src="harel.jpg" alt="Profile" class="rounded-circle me-1 current-user-profile-image" width="36" height="36">
                     
                     <span >הפרופיל שלי</span>
                 </a>
@@ -113,8 +115,14 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-1">
-                        <img src="harel.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
-                        <input type="text" id="postText" class="form-control" placeholder="מה בא לך לשתף?">
+<img
+    src="harel.jpg"
+    alt="Profile"
+    class="rounded-circle current-user-profile-image"
+    width="45"
+    height="45"
+    style="object-fit: cover;"
+>               <input type="text" id="postText" class="form-control" placeholder="מה בא לך לשתף?">
                         <button id="publishPostBtn" class="btn btn-primary">פרסם</button>
                          <button class="btn btn-light"><i class="bi bi-file-earmark-image"></i></button>
                         <button class="btn btn-light"><i class="bi bi-camera-video-fill"></i></button>
@@ -131,16 +139,8 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <img src="harel.jpg" alt="Profile" class="rounded-circle" width="40" height="40">
-                        <span><strong>הראל דדון</strong></span>
-                    </div>
-                    <p>פה אפשר לרשום תיאור לפוסטים:מלל,אימוגי וכל מה שמתחשק.</p>
-                    <img src="harel.jpg" alt="Post Image" class="img-fluid rounded mb-3">
-                    <div class="d-flex justify-content-between text-muted">
-                        <span><i class="bi bi-hand-thumbs-up"></i> 120</span>
-                        <span><i class="bi bi-chat-left-dots"></i> 45 תגובות</span>
-                        <span><i class="bi bi-share-fill"></i> 10 שיתופים</span>
-                    </div>
+                        
+                    </div>  
                 </div>
             </div>
         </div>

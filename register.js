@@ -7,7 +7,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         lastName: document.getElementById('lastName').value,
         email: document.getElementById('email').value,
         city: document.getElementById('city').value,
-        password: document.getElementById('password').value
+        password: document.getElementById('password').value,
+        birthday: document.getElementById('birthday').value
     };
 
     try {
