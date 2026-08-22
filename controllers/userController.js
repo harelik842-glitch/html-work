@@ -348,6 +348,91 @@ const getFriendsByUserId = async (req, res) => {
     }
 };
 
+
+const uploadProfileImage = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: 'No image uploaded'
+            });
+        }
+
+        const imagePath = `/uploads/${req.file.filename}`;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {
+                profileImage: imagePath
+            },
+            {
+                new: true
+            }
+        ).select('-password');
+
+        res.status(200).json({
+            message: 'Profile image updated successfully',
+            profileImage: user.profileImage
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error uploading profile image',
+            error: error.message
+        });
+    }
+};
+
+
+const uploadCoverImage = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: 'No image uploaded'
+            });
+        }
+
+        const imagePath = `/uploads/${req.file.filename}`;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {
+                coverImage: imagePath
+            },
+            {
+                new: true
+            }
+        ).select('-password');
+
+        res.status(200).json({
+            message: 'Cover image updated successfully',
+            coverImage: user.coverImage
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error uploading cover image',
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
     createUser,
     loginUser,
@@ -358,7 +443,9 @@ module.exports = {
     updateProfile,
     getMyFriends,
     getUserById,
-    getFriendsByUserId
+    getFriendsByUserId,
+    uploadProfileImage,
+    uploadCoverImage
 };
 
 

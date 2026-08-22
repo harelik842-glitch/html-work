@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const path = require('path');
 const app = express();
 app.use(session({
     secret: 'facebook-secret-key',
@@ -48,6 +49,7 @@ app.use('/api', userRoutes);
 app.use('/api', postRoutes);
 app.use('/api', commentRoutes);
 app.use('/api', groupRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

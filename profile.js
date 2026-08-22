@@ -51,6 +51,58 @@ const response = profileUserId
         }
 
         const user = await response.json();
+
+
+const friendButton =
+    document.getElementById('profileFriendBtn');
+
+if (friendButton) {
+    if (isOwnProfile) {
+        friendButton.style.display = 'none';
+    } else {
+        friendButton.style.display = 'inline-block';
+
+        try {
+            const currentUserResponse =
+                await fetch('/api/current-user');
+
+            if (currentUserResponse.ok) {
+                const currentUser =
+                    await currentUserResponse.json();
+
+                const alreadyFriends =
+                    currentUser.friends?.some(
+                        friendId =>
+                            friendId.toString() === profileUserId
+                    );
+
+                if (alreadyFriends) {
+                    friendButton.innerHTML = `
+                        <i class="bi bi-person-dash-fill"></i>
+                        הסר חבר
+                    `;
+
+                    friendButton.dataset.friendStatus = 'friend';
+                } else {
+                    friendButton.innerHTML = `
+                        <i class="bi bi-person-plus-fill"></i>
+                        הוסף חבר
+                    `;
+
+                    friendButton.dataset.friendStatus = 'not-friend';
+                }
+            }
+
+        } catch (error) {
+            console.error(
+                'Error checking friendship:',
+                error
+            );
+        }
+    }
+}
+
+
         if (!isOwnProfile) {
     const editProfileBtn =
         document.getElementById('editProfileBtn');
@@ -172,7 +224,44 @@ if (createPostProfileImage && user.profileImage) {
 }
 
 
+const profileFriendBtn = document.getElementById('profileFriendBtn');
 
+if (profileFriendBtn) {
+    profileFriendBtn.addEventListener('click', async function () {
+        if (!profileUserId) {
+            return;
+        }
+
+        const isFriend =
+            this.dataset.friendStatus === 'friend';
+
+        const method = isFriend ? 'DELETE' : 'PUT';
+
+        try {
+            const response = await fetch(
+                `/api/users/${profileUserId}/friend`,
+                {
+                    method: method
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                await loadProfile();
+            } else {
+                alert(
+                    data.message ||
+                    'אירעה שגיאה בעדכון החברות'
+                );
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('לא ניתן להתחבר לשרת');
+        }
+    });
+}
     
 
 document.getElementById('editProfileBtn').addEventListener('click', async function () {
@@ -398,8 +487,49 @@ async function loadMyPosts() {
 }
 
 
-document.getElementById('editProfileImageBtn').addEventListener('click', function () {
-    document.getElementById('profileImageInput').click();
+document.getElementById('profileImageInput').addEventListener('change', async function () {
+    const file = this.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    try {
+        const response = await fetch('/api/profile-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById('profileImage').src =
+                data.profileImage;
+
+            const createPostProfileImage =
+                document.getElementById('createPostProfileImage');
+
+            if (createPostProfileImage) {
+                createPostProfileImage.src =
+                    data.profileImage;
+            }
+
+            alert('תמונת הפרופיל עודכנה בהצלחה');
+
+        } else {
+            alert(
+                data.message ||
+                'אירעה שגיאה בעדכון התמונה'
+            );
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert('לא ניתן להתחבר לשרת');
+    }
 });
 
 document.getElementById('editCoverBtn').addEventListener('click', function () {
@@ -448,45 +578,41 @@ document.getElementById('profileImageInput').addEventListener('change', function
 });
 
 
-document.getElementById('coverImageInput').addEventListener('change', function () {
+document.getElementById('coverImageInput').addEventListener('change', async function () {
     const file = this.files[0];
 
     if (!file) {
         return;
     }
 
-    const reader = new FileReader();
+    const formData = new FormData();
+    formData.append('coverImage', file);
 
-    reader.onload = async function (event) {
-        const imageData = event.target.result;
+    try {
+        const response = await fetch('/api/cover-image', {
+            method: 'POST',
+            body: formData
+        });
 
-        try {
-            const response = await fetch('/api/profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    coverImage: imageData
-                })
-            });
+        const data = await response.json();
 
-            const data = await response.json();
+        if (response.ok) {
+            document.getElementById('coverImage').src =
+                data.coverImage;
 
-            if (response.ok) {
-                document.getElementById('coverImage').src = imageData;
-                alert('תמונת הנושא עודכנה בהצלחה');
-            } else {
-                alert(data.message || 'אירעה שגיאה בעדכון תמונת הנושא');
-            }
+            alert('תמונת הנושא עודכנה בהצלחה');
 
-        } catch (error) {
-            console.error(error);
-            alert('לא ניתן להתחבר לשרת');
+        } else {
+            alert(
+                data.message ||
+                'אירעה שגיאה בעדכון תמונת הנושא'
+            );
         }
-    };
 
-    reader.readAsDataURL(file);
+    } catch (error) {
+        console.error(error);
+        alert('לא ניתן להתחבר לשרת');
+    }
 });
 
 
@@ -837,7 +963,22 @@ if (deleteButton) {
     });
 }
 
-    await loadProfileComments();
+    
+}
+
+
+const editProfileImageButton =
+    document.getElementById('editProfileImageBtn');
+
+if (editProfileImageButton) {
+    editProfileImageButton.addEventListener('click', function () {
+        const input =
+            document.getElementById('profileImageInput');
+
+        if (input) {
+            input.click();
+        }
+    });
 }
 
 
