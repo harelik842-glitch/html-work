@@ -45,4 +45,6 @@ router.get('/users/:id', userController.getUserById);
 router.get('/users/:id/friends', userController.getFriendsByUserId);
 router.post('/profile-image', upload.single('profileImage'),userController.uploadProfileImage);
 router.post('/cover-image',upload.single('coverImage'),userController.uploadCoverImage);
+router.get('/search/users', userController.searchUsers);
+router.post('/logout', userController.logout);
 module.exports = router;

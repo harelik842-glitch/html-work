@@ -28,10 +28,13 @@ const createComment = async (req, res) => {
 
         const savedComment = await newComment.save();
 
-        res.status(201).json({
-            message: 'Comment created successfully',
-            comment: savedComment
-        });
+const populatedComment = await Comment.findById(savedComment._id)
+    .populate('author', 'username firstName lastName profileImage');
+
+res.status(201).json({
+    message: 'Comment created successfully',
+    comment: populatedComment
+});
 
     } catch (error) {
         res.status(500).json({
@@ -46,7 +49,10 @@ const getCommentsByPost = async (req, res) => {
         const postId = req.params.postId;
 
         const comments = await Comment.find({ post: postId })
-            .populate('author', 'username firstName lastName')
+            .populate(
+                'author',
+                'username firstName lastName profileImage'
+            )
             .sort({ createdAt: 1 });
 
         res.status(200).json(comments);

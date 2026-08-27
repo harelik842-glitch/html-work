@@ -47,20 +47,34 @@ async function loadUsers() {
                 'd-flex justify-content-between align-items-center border rounded p-3 mb-2';
 
             userElement.innerHTML = `
-                <div>
-                    <strong>
-                        ${user.firstName || ''}
-                        ${user.lastName || ''}
-                    </strong>
+                <a
+    href="profile.html?userId=${user._id}"
+    class="d-flex align-items-center gap-3 text-decoration-none text-dark"
+>
+    <img
+        src="${user.profileImage || 'harel.jpg'}"
+        alt="Profile"
+        class="rounded-circle"
+        width="55"
+        height="55"
+        style="object-fit: cover;"
+    >
 
-                    <div class="text-muted small">
-                        @${user.username}
-                    </div>
+    <div>
+        <strong>
+            ${user.firstName || ''}
+            ${user.lastName || ''}
+        </strong>
 
-                    <div class="text-muted small">
-                        ${user.city || ''}
-                    </div>
-                </div>
+        <div class="text-muted small">
+            @${user.username || ''}
+        </div>
+
+        <div class="text-muted small">
+            ${user.city || ''}
+        </div>
+    </div>
+</a>
 
                ${isFriend ? `
     <button

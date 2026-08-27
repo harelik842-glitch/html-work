@@ -389,7 +389,21 @@ const uploadProfileImage = async (req, res) => {
         });
     }
 };
+const logout = (req, res) => {
+    req.session.destroy(error => {
+        if (error) {
+            return res.status(500).json({
+                message: 'Error logging out'
+            });
+        }
 
+        res.clearCookie('connect.sid');
+
+        res.status(200).json({
+            message: 'Logged out successfully'
+        });
+    });
+};
 
 const uploadCoverImage = async (req, res) => {
     try {
@@ -433,6 +447,90 @@ const uploadCoverImage = async (req, res) => {
 };
 
 
+const searchUsers = async (req, res) => {
+    try {
+        const { q, name, username, city } = req.query;
+
+        let filter = {};
+
+        if (q) {
+            filter = {
+                $or: [
+                    {
+                        firstName: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        lastName: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        username: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        city: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    }
+                ]
+            };
+        } else {
+            if (name) {
+                filter.$or = [
+                    {
+                        firstName: {
+                            $regex: name,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        lastName: {
+                            $regex: name,
+                            $options: 'i'
+                        }
+                    }
+                ];
+            }
+
+            if (username) {
+                filter.username = {
+                    $regex: username,
+                    $options: 'i'
+                };
+            }
+
+            if (city) {
+                filter.city = {
+                    $regex: city,
+                    $options: 'i'
+                };
+            }
+        }
+
+        const users = await User.find(filter)
+            .select(
+                'username firstName lastName city profileImage'
+            )
+            .limit(20);
+
+        res.status(200).json(users);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error searching users',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     createUser,
     loginUser,
@@ -445,7 +543,9 @@ module.exports = {
     getUserById,
     getFriendsByUserId,
     uploadProfileImage,
-    uploadCoverImage
+    uploadCoverImage,
+    searchUsers,
+    logout  
 };
 
 

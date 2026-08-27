@@ -155,8 +155,9 @@ const updateGroup = async (req, res) => {
         group.name = req.body.name ?? group.name;
         group.description = req.body.description ?? group.description;
         group.address = req.body.address ?? group.address;
-        group.image = req.body.image ?? group.image;
-
+if (req.file) {
+    group.image = `/uploads/${req.file.filename}`;
+}
         const updatedGroup = await group.save();
 
         res.status(200).json({
@@ -246,13 +247,222 @@ const getGroupsByUserId = async (req, res) => {
     }
 };
 
+
+const getGroupById = async (req, res) => {
+    try {
+        const groupId = req.params.id;
+
+        const group = await Group.findById(groupId)
+            .populate('creator', 'username firstName lastName profileImage')
+            .populate('members', 'username firstName lastName profileImage');
+
+        if (!group) {
+            return res.status(404).json({
+                message: 'Group not found'
+            });
+        }
+
+        res.status(200).json(group);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error getting group',
+            error: error.message
+        });
+    }
+};
+
+
+const leaveGroup = async (req, res) => {
+    try {
+        const groupId = req.params.id;
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const group = await Group.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({
+                message: 'Group not found'
+            });
+        }
+
+        if (group.creator.toString() === userId.toString()) {
+            return res.status(400).json({
+                message: 'Group creator cannot leave the group'
+            });
+        }
+
+        const isMember = group.members.some(
+            memberId => memberId.toString() === userId.toString()
+        );
+
+        if (!isMember) {
+            return res.status(400).json({
+                message: 'User is not a member of this group'
+            });
+        }
+
+        group.members = group.members.filter(
+            memberId => memberId.toString() !== userId.toString()
+        );
+
+        await group.save();
+
+        res.status(200).json({
+            message: 'Left group successfully',
+            membersCount: group.members.length
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error leaving group',
+            error: error.message
+        });
+    }
+};
+
+const createGroupWithImage = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const { name, description, address } = req.body;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                message: 'Group name is required'
+            });
+        }
+
+        const imagePath = req.file
+            ? `/uploads/${req.file.filename}`
+            : '';
+
+        const newGroup = new Group({
+            name: name.trim(),
+            description: description ? description.trim() : '',
+            address: address ? address.trim() : '',
+            image: imagePath,
+            creator: userId,
+            members: [userId]
+        });
+
+        await newGroup.save();
+
+        const populatedGroup = await Group.findById(newGroup._id)
+            .populate(
+                'creator',
+                'username firstName lastName profileImage'
+            )
+            .populate(
+                'members',
+                'username firstName lastName profileImage'
+            );
+
+        res.status(201).json({
+            message: 'Group created successfully',
+            group: populatedGroup
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error creating group',
+            error: error.message
+        });
+    }
+};
+
+
+const searchGroups = async (req, res) => {
+    try {
+        const { q, name, description, address } = req.query;
+
+        let filter = {};
+
+        if (q) {
+            filter = {
+                $or: [
+                    {
+                        name: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        description: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        address: {
+                            $regex: q,
+                            $options: 'i'
+                        }
+                    }
+                ]
+            };
+        } else {
+            if (name) {
+                filter.name = {
+                    $regex: name,
+                    $options: 'i'
+                };
+            }
+
+            if (description) {
+                filter.description = {
+                    $regex: description,
+                    $options: 'i'
+                };
+            }
+
+            if (address) {
+                filter.address = {
+                    $regex: address,
+                    $options: 'i'
+                };
+            }
+        }
+
+        const groups = await Group.find(filter)
+            .select(
+                'name description address image members'
+            )
+            .limit(20);
+
+        res.status(200).json(groups);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error searching groups',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     createGroup,
     getGroups,
     joinGroup,
+    getGroupById,
     getGroupsByUserId,
     removeMember,
     getMyGroups,
-    updateGroup
+    updateGroup,
+    searchGroups,
+    leaveGroup,
+    createGroupWithImage
 };
     

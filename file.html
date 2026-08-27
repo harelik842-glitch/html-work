@@ -14,26 +14,105 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
         
         <div class="d-flex align-items-center">
-            <img src="harel.jpg" alt="Facebook Logo" width="40" height="40" class="current-user-profile-image"">
+<img src="harel.jpg" alt="Facebook Logo" width="40" height="40" class="current-user-profile-image">
 
-            <input type="text" class="form-control" placeholder="Search Facebook" style="width: 200px;">
+            <div class="position-relative ms-2" style="width: 250px;">
+
+    <div class="input-group">
+        <span class="input-group-text bg-light border-0">
+            <i class="bi bi-search"></i>
+        </span>
+
+        <input
+            type="text"
+            id="mainSearchInput"
+            class="form-control bg-light border-0"
+            placeholder="חפש בפייסבוק..."
+            autocomplete="off"
+        >
+    </div>
+
+    <div
+        id="mainSearchResults"
+        class="position-absolute bg-white border rounded shadow w-100 mt-1"
+        style="
+            display: none;
+            z-index: 2000;
+            max-height: 420px;
+            overflow-y: auto;
+        "
+    ></div>
+
+</div>
         </div>
 
         <div class="d-flex gap-5 fs-4">
             <a href="#" class="text-primary border-bottom border-primary border-3 px-2 pb-1"><i class="bi bi-house-door-fill"></i></a>
-            <a href="#" class="text-muted px-2"><i class="bi bi-tv"></i></a>
-            <a href="#" class="text-muted px-2"><i class="bi bi-people"></i></a>
-            <a href="#" class="text-muted px-2"><i class="bi bi-shop"></i></a>
-            <a href="#" class="text-muted px-2"><i class="bi bi-person-circle"></i></a>
+            <a href="media.html" class="text-muted px-2"> <i class="bi bi-tv"></i></a>      
+            <a href="groups.html" class="text-muted px-2"><i class="bi bi-people"></i></a>
+            <a href="shop.html" class="text-muted px-2"><i class="bi bi-shop"></i></a>
+            <a href="profile.html" class="text-muted px-2"><i class="bi bi-person-circle"></i></a>
         </div>
 
-        <div class="d-flex align-items-center gap-2 fs-4">
-            <a href="#" class="text-primary px-1 "><i class="bi bi-list"></i></a>
-             <a href="#" class="text-primary px-1"><i class="bi bi-chat-dots-fill"></i></a>
-            <a href="#" class="text-primary px-1"><i class="bi bi-bell-fill"></i></a>
-            <img src="harel.jpg" alt="Profile" class="rounded-circle current-user-profile-image" width="40" height="40" >
+       <div class="d-flex align-items-center gap-2 fs-4">
+
+    <a href="#" class="text-primary px-1">
+        <i class="bi bi-list"></i>
+    </a>
+
+    <a
+    href="messages.html"
+    class="text-primary px-1 position-relative"
 >
+    <i class="bi bi-chat-dots-fill"></i>
+
+    <span
+        id="unreadMessagesBadge"
+class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+        style="display: none; font-size: 10px;"
+    >
+        0
+    </span>
+</a>
+
+    <a href="#" class="text-primary px-1">
+        <i class="bi bi-bell-fill"></i>
+    </a>
+
+    <div class="position-relative">
+
+        <img
+            src="harel.jpg"
+            alt="Profile"
+            id="homeProfileMenuBtn"
+            class="rounded-circle current-user-profile-image"
+            width="40"
+            height="40"
+            style="object-fit: cover; cursor: pointer;"
+        >
+
+        <div
+            id="homeProfileMenu"
+            class="card shadow position-absolute mt-2"
+            style="display: none; left: 0; min-width: 180px; z-index: 1050;"
+        >
+            <div class="card-body p-2">
+
+                <button
+                    type="button"
+                    id="logoutBtn"
+                    class="btn btn-light w-100 d-flex align-items-center gap-2"
+                >
+                    <i class="bi bi-box-arrow-right"></i>
+                    התנתקות
+                </button>
+
+            </div>
         </div>
+
+    </div>
+
+</div>
 
     </div> </nav>
 
@@ -45,7 +124,7 @@
                 <a href="profile.html" class="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-effect ">
                     <img src="harel.jpg" alt="Profile" class="rounded-circle me-1 current-user-profile-image" width="36" height="36">
                     
-                    <span >הפרופיל שלי</span>
+                    <span id="currentUserSidebarName">הפרופיל שלי</span>
                 </a>
 
                 <a href="friends.html" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
@@ -112,28 +191,153 @@
             </div>
         </div>          
         <div class="col-lg-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-<img
-    src="harel.jpg"
-    alt="Profile"
-    class="rounded-circle current-user-profile-image"
-    width="45"
-    height="45"
-    style="object-fit: cover;"
->               <input type="text" id="postText" class="form-control" placeholder="מה בא לך לשתף?">
-                        <button id="publishPostBtn" class="btn btn-primary">פרסם</button>
-                         <button class="btn btn-light"><i class="bi bi-file-earmark-image"></i></button>
-                        <button class="btn btn-light"><i class="bi bi-camera-video-fill"></i></button>
-                        <button class="btn btn-light"><i class="bi bi-emoji-smile"></i></button>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        
-                    </div>
-                </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <!-- תיבת יצירת פוסט -->
+            <div class="d-flex align-items-center gap-2 mb-2">
+
+                <img
+                    src="harel.jpg"
+                    alt="Profile"
+                    class="rounded-circle current-user-profile-image"
+                    width="45"
+                    height="45"
+                    style="object-fit: cover;"
+                >
+
+                <input
+                    type="text"
+                    id="postText"
+                    class="form-control"
+                    placeholder="מה בא לך לשתף?"
+                >
+
+                <button
+                    type="button"
+                    id="publishPostBtn"
+                    class="btn btn-primary"
+                >
+                    פרסם
+                </button>
+
+                <!-- תמונה -->
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectPostImageBtn"
+                    title="הוסף תמונה"
+                >
+                    <i class="bi bi-file-earmark-image"></i>
+                </button>
+
+                <!-- סרטון -->
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectPostVideoBtn"
+                    title="הוסף סרטון"
+                >
+                    <i class="bi bi-camera-video-fill"></i>
+                </button>
+
+                <!-- הרגשה -->
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectPostFeelingBtn"
+                    title="הוסף הרגשה"
+                >
+                    <i class="bi bi-emoji-smile"></i>
+                </button>
+
             </div>
 
+
+            <!-- בחירת תמונה - מוסתר -->
+            <input
+                type="file"
+                id="postImageInput"
+                accept="image/*"
+                style="display: none;"
+            >
+
+            <!-- בחירת סרטון - מוסתר -->
+            <input
+                type="file"
+                id="postVideoInput"
+                accept="video/*"
+                style="display: none;"
+            >
+
+
+            <!-- שם הקובץ שנבחר -->
+            <div
+                id="selectedPostFile"
+                class="text-muted small mb-2"
+            ></div>
+
+
+            <!-- חלונית רגשות -->
+            <div
+                id="feelingsMenu"
+                class="card shadow p-3 mt-2"
+                style="display: none;"
+            >
+
+                <div class="fw-bold mb-2">
+                    איך אתה מרגיש?
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😊 שמח">😊 שמח</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😁 מאושר">😁 מאושר</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😍 מאוהב">😍 מאוהב</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🤩 נרגש">🤩 נרגש</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🥳 חוגג">🥳 חוגג</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😌 רגוע">😌 רגוע</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🤗 אסיר תודה">🤗 אסיר תודה</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="💪 חזק">💪 חזק</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🤔 חושב">🤔 חושב</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😴 עייף">😴 עייף</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😰 לחוץ">😰 לחוץ</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😟 מודאג">😟 מודאג</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😢 עצוב">😢 עצוב</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😭 שבור">😭 שבור</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😡 כועס">😡 כועס</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😤 מתוסכל">😤 מתוסכל</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🤒 לא מרגיש טוב">🤒 לא מרגיש טוב</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😱 מופתע">😱 מופתע</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="😇 מבורך">😇 מבורך</button>
+
+                    <button type="button" class="btn btn-light feeling-option" data-feeling="🙏 מלא תקווה">🙏 מלא תקווה</button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
             <!-- פוסטים לדוגמה -->
              <div id="postsContainer"></div>
             <div class="card mb-4">

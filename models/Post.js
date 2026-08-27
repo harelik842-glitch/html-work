@@ -32,7 +32,12 @@ const postSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+
+    video: {
+    type: String,
+    default: ''
+}
 });
 
 const Post = mongoose.model('Post', postSchema);

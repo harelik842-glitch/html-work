@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>עמוד קבוצה</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4">
+
+    <div class="d-flex align-items-center gap-3">
+
+        <img
+            id="groupProfileImage"
+            src=""
+            alt="Group"
+            class="rounded-circle border"
+            width="90"
+            height="90"
+            style="object-fit: cover;"
+        >
+
+        <div>
+            <h1 id="groupName" class="mb-1">שם הקבוצה</h1>
+
+            <div class="text-muted">
+                <span id="groupMembersCount">0</span>
+                חברים
+            </div>
+        </div>
+
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mt-3">
+
+        <button
+            id="joinGroupPageBtn"
+            class="btn btn-primary"
+            style="display: none;"
+        >
+            <i class="bi bi-person-plus-fill"></i>
+            הצטרף לקבוצה
+        </button>
+
+        <button
+            id="leaveGroupPageBtn"
+            class="btn btn-outline-danger"
+            style="display: none;"
+        >
+            <i class="bi bi-box-arrow-right"></i>
+            עזוב קבוצה
+        </button>
+
+        <button
+            id="editGroupBtn"
+            class="btn btn-outline-primary"
+            style="display: none;"
+        >
+            <i class="bi bi-pencil-square"></i>
+            עריכת קבוצה
+        </button>
+
+        <a href="groups.html" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-right"></i>
+            חזרה לקבוצות
+        </a>
+        <div
+    id="editGroupFormContainer"
+    class="card mt-3"
+    style="display: none;"
+>
+    <div class="card-body">
+
+        <h5 class="mb-3">
+            עריכת קבוצה
+        </h5>
+
+        <div class="mb-3">
+            <label for="editGroupNameInput" class="form-label">
+                שם הקבוצה
+            </label>
+
+            <input
+                type="text"
+                id="editGroupNameInput"
+                class="form-control"
+            >
+        </div>
+
+        <div class="mb-3">
+            <label for="editGroupImageInput" class="form-label">
+                תמונת פרופיל חדשה
+            </label>
+
+            <input
+                type="file"
+                id="editGroupImageInput"
+                class="form-control"
+                accept="image/*"
+            >
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button
+                type="button"
+                id="saveGroupChangesBtn"
+                class="btn btn-primary"
+            >
+                שמור שינויים
+            </button>
+
+            <button
+                type="button"
+                id="cancelGroupEditBtn"
+                class="btn btn-outline-secondary"
+            >
+                ביטול
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+    </div>
+
+
+    <!-- שתי העמודות -->
+    <div class="row g-4 mt-3">
+
+        <!-- צד ימין - חברי הקבוצה -->
+        <div class="col-lg-4">
+
+            <div class="card">
+                <div class="card-body">
+
+                    <h5 class="mb-3">
+                        חברי הקבוצה
+                    </h5>
+
+                    <div id="groupMembersContainer"></div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+   
+    <div class="col-lg-8">
+
+       <div
+    class="card mb-4"
+    id="groupPostBox"
+    style="display: none;"
+>
+    <div class="card-body">
+
+        <div class="d-flex align-items-center gap-3 mb-3">
+
+            <img
+                id="groupCurrentUserImage"
+                src="harel.jpg"
+                alt="Profile"
+                class="rounded-circle"
+                width="45"
+                height="45"
+                style="object-fit: cover;"
+            >
+
+            <textarea
+                id="groupPostText"
+                class="form-control"
+                rows="3"
+                placeholder="כתוב משהו בקבוצה..."
+            ></textarea>
+
+        </div>
+
+        <input
+            type="file"
+            id="groupPostImageInput"
+            accept="image/*"
+            style="display: none;"
+        >
+
+        <input
+            type="file"
+            id="groupPostVideoInput"
+            accept="video/*"
+            style="display: none;"
+        >
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectGroupPostImageBtn"
+                    title="הוסף תמונה"
+                >
+                    <i class="bi bi-file-earmark-image fs-5"></i>
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectGroupPostVideoBtn"
+                    title="הוסף סרטון"
+                >
+                    <i class="bi bi-camera-video-fill fs-5"></i>
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    id="selectGroupPostFeelingBtn"
+                    title="הוסף הרגשה"
+                >
+                    <i class="bi bi-emoji-smile fs-5"></i>
+                </button>
+
+                <span
+                    id="selectedGroupFileName"
+                    class="text-muted small me-2"
+                ></span>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="publishGroupPostBtn"
+            >
+                פרסם
+            </button>
+
+        </div>
+
+        <div
+            id="groupFeelingsMenu"
+            class="card shadow p-3 mt-3"
+            style="display: none;"
+        >
+            <div class="fw-bold mb-2">
+                איך אתה מרגיש?
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😊 שמח">😊 שמח</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😁 מאושר">😁 מאושר</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😍 מאוהב">😍 מאוהב</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🤩 נרגש">🤩 נרגש</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🥳 חוגג">🥳 חוגג</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😌 רגוע">😌 רגוע</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🤗 אסיר תודה">🤗 אסיר תודה</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="💪 חזק">💪 חזק</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🤔 חושב">🤔 חושב</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😴 עייף">😴 עייף</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😰 לחוץ">😰 לחוץ</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😟 מודאג">😟 מודאג</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😢 עצוב">😢 עצוב</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😭 שבור">😭 שבור</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😡 כועס">😡 כועס</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😤 מתוסכל">😤 מתוסכל</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🤒 לא מרגיש טוב">🤒 לא מרגיש טוב</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😱 מופתע">😱 מופתע</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="😇 מבורך">😇 מבורך</button>
+
+                <button type="button" class="btn btn-light group-feeling-option" data-feeling="🙏 מלא תקווה">🙏 מלא תקווה</button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+        <!-- רשימת הפוסטים -->
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="mb-4">
+                    פוסטים בקבוצה
+                </h4>
+
+                <div id="groupPostsContainer"></div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="group.js"></script>
+
+</body>
+</html>
