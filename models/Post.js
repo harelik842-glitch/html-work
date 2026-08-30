@@ -18,26 +18,32 @@ const postSchema = new mongoose.Schema({
         default: ''
     },
 
+    video: {
+        type: String,
+        default: ''
+    },
+
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
 
     group: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group',
-    default: null
-},
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Group',
+        default: null
+    },
+
+    sharedPost: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        default: null
+    },
 
     createdAt: {
         type: Date,
         default: Date.now
-    },
-
-    video: {
-    type: String,
-    default: ''
-}
+    }
 });
 
 const Post = mongoose.model('Post', postSchema);

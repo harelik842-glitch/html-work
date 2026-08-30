@@ -1,36 +1,49 @@
-document.getElementById('registerForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
+document
+    .getElementById('registerForm')
+    .addEventListener('submit', function(event) {
 
-    const userData = {
-        username: document.getElementById('username').value,
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        city: document.getElementById('city').value,
-        password: document.getElementById('password').value,
-        birthday: document.getElementById('birthday').value
-    };
+        event.preventDefault();
 
-    try {
-        const response = await fetch('/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-        });
+        const password =
+            document.getElementById('password').value;
 
-        const data = await response.json();
+        const confirmPassword =
+            document.getElementById('confirmPassword').value;
 
-        if (response.ok) {
-            alert('ההרשמה בוצעה בהצלחה');
-            window.location.href = 'index.html';
-        } else {
-            alert(data.message || 'אירעה שגיאה בהרשמה');
+        if (password !== confirmPassword) {
+            alert('הסיסמאות אינן תואמות');
+            return;
         }
 
-    } catch (error) {
-        alert('לא ניתן להתחבר לשרת');
-        console.error(error);
-    }
-});
+        const userData = {
+            username:
+                document.getElementById('username').value.trim(),
+
+            firstName:
+                document.getElementById('firstName').value.trim(),
+
+            lastName:
+                document.getElementById('lastName').value.trim(),
+
+            email:
+                document.getElementById('email').value.trim(),
+
+            city:
+                document.getElementById('city').value.trim(),
+
+            password: password,
+
+            birthday:
+                document.getElementById('birthday').value
+        };
+
+        // שמירה זמנית עד שלב 2
+        sessionStorage.setItem(
+            'registrationData',
+            JSON.stringify(userData)
+        );
+
+        // מעבר לשלב בחירת התמונות
+        window.location.href =
+            'register-step2.html';
+    });

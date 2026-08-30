@@ -33,8 +33,7 @@ const upload = multer({
 
 
 
-router.post('/users', userController.createUser);
-router.post('/login', userController.loginUser);
+router.post( '/users',upload.fields([{name: 'profileImage',maxCount: 1},{name: 'coverImage',maxCount: 1}]),userController.createUser);router.post('/login', userController.loginUser);
 router.get('/current-user', userController.getCurrentUser);
 router.put('/users/:id/friend', userController.addFriend);
 router.get('/users', userController.getUsers);
@@ -47,4 +46,16 @@ router.post('/profile-image', upload.single('profileImage'),userController.uploa
 router.post('/cover-image',upload.single('coverImage'),userController.uploadCoverImage);
 router.get('/search/users', userController.searchUsers);
 router.post('/logout', userController.logout);
+router.put('/saved-posts/:postId', userController.savePost);
+
+router.delete('/saved-posts/:postId', userController.unsavePost);
+
+router.get('/saved-posts', userController.getSavedPosts);
+
+router.put('/users/:id/friend-request/accept',userController.acceptFriendRequest);
+
+router.delete( '/users/:id/friend-request/reject',userController.rejectFriendRequest);
+router.delete('/users/:id/friend-request/cancel',userController.cancelFriendRequest);
+router.delete('/users/me',userController.deleteUser);
+router.get('/users/stats/by-city',userController.getUsersCountByCity);
 module.exports = router;

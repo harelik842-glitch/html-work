@@ -36,10 +36,14 @@ router.post( '/group-posts',upload.single('image'), postController.createGroupPo
 router.get('/videos', postController.getRandomVideos);
 router.get('/posts', postController.getPosts);
 router.delete('/posts/:id', postController.deletePost);
+router.put('/posts/:id',postController.updatePost);
 router.put('/posts/:id/like', postController.toggleLike);
 router.get('/feed', postController.getFeedPosts);
 router.get('/my-posts', postController.getMyPosts);
 router.get('/users/:id/posts', postController.getPostsByUserId);
 router.get( '/groups/:groupId/posts', postController.getPostsByGroupId);
-
+router.get('/memories', postController.getMemories);
+router.post('/posts/:id/share', postController.sharePost);
+router.get( '/posts/search',postController.searchPosts);
+router.get('/posts/stats/by-group',postController.getPostsCountByGroup);
 module.exports = router;

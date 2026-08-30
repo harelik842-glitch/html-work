@@ -452,10 +452,60 @@ const searchGroups = async (req, res) => {
     }
 };
 
+const deleteGroup = async (req, res) => {
+    try {
+        const groupId = req.params.id;
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User is not logged in'
+            });
+        }
+
+        const group = await Group.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({
+                message: 'Group not found'
+            });
+        }
+
+        // רק יוצר הקבוצה יכול למחוק אותה
+        if (
+            group.creator.toString() !==
+            userId.toString()
+        ) {
+            return res.status(403).json({
+                message: 'Only the group creator can delete this group'
+            });
+        }
+
+        await Group.findByIdAndDelete(groupId);
+
+        res.status(200).json({
+            message: 'Group deleted successfully'
+        });
+
+    } catch (error) {
+
+        console.error(
+            'DELETE GROUP ERROR:',
+            error
+        );
+
+        res.status(500).json({
+            message: 'Error deleting group',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     createGroup,
     getGroups,
     joinGroup,
+    deleteGroup,
     getGroupById,
     getGroupsByUserId,
     removeMember,

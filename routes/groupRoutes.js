@@ -46,4 +46,5 @@ router.get('/my-groups', groupController.getMyGroups);
 router.put('/groups/:id',upload.single('image'), groupController.updateGroup);
 router.delete('/groups/:groupId/members/:memberId', groupController.removeMember);
 router.get('/users/:id/groups', groupController.getGroupsByUserId);
+router.delete('/groups/:id',groupController.deleteGroup);
 module.exports = router;

@@ -7,175 +7,270 @@
 
     <title>הודעות</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
 
-    <div class="container py-4">
+    <!-- ניווט משותף -->
+    <div id="sharedNavigation"></div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
 
-            <h2>
-                <i class="bi bi-chat-dots-fill"></i>
-                הודעות
-            </h2>
+    <!-- תוכן העמוד -->
+    <main class="shared-page-main">
 
-            <a href="file.html" class="btn btn-outline-secondary">
-                <i class="bi bi-house-door-fill"></i>
-                חזרה לדף הבית
-            </a>
+        <div class="container py-4">
 
-        </div>
+            <!-- כותרת -->
+            <div class="mb-4">
 
-        <div class="row g-4">
+                <h2 class="mb-1">
+                    <i class="bi bi-chat-dots-fill"></i>
+                    הודעות
+                </h2>
 
-            <!-- רשימת שיחות -->
-            <div class="col-lg-4">
-
-                <div class="card">
-                    <div class="card-body">
-
-                        <h5 class="mb-3">
-    השיחות שלי
-</h5>
-
-<div class="d-flex gap-2 mb-3">
-
-    <button
-        type="button"
-        id="allMessagesTab"
-        class="btn btn-primary btn-sm"
-    >
-        הכל
-    </button>
-
-    <button
-        type="button"
-        id="unreadMessagesTab"
-        class="btn btn-outline-primary btn-sm"
-    >
-        לא נקראו
-    </button>
-
-</div>
-
-<div id="conversationsContainer"></div>
-
-                    </div>
+                <div class="text-muted">
+                    השיחות וההודעות שלך
                 </div>
 
             </div>
 
 
-            <!-- אזור השיחה -->
-            <div class="col-lg-8">
+            <div class="row g-4">
 
-                <div class="card">
-                    <div class="card-body">
 
-                        <div id="emptyConversation" class="text-center text-muted py-5">
-                            בחר שיחה כדי להתחיל
-                        </div>
+                <!-- =====================================
+                     רשימת שיחות
+                ====================================== -->
 
-                        <div id="conversationArea" style="display: none;">
+                <div class="col-lg-4">
 
-                            <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                    <div class="card">
 
-                                <img
-                                    id="conversationUserImage"
-                                    src="harel.jpg"
-                                    alt="Profile"
-                                    class="rounded-circle"
-                                    width="45"
-                                    height="45"
-                                    style="object-fit: cover;"
+                        <div class="card-body">
+
+                            <h5 class="mb-3">
+                                השיחות שלי
+                            </h5>
+
+
+                            <!-- טאבים -->
+                            <div class="d-flex gap-2 mb-3">
+
+                                <button
+                                    type="button"
+                                    id="allMessagesTab"
+                                    class="btn btn-primary btn-sm"
                                 >
+                                    הכל
+                                </button>
 
-                                <strong id="conversationUserName"></strong>
+
+                                <button
+                                    type="button"
+                                    id="unreadMessagesTab"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    לא נקראו
+                                </button>
 
                             </div>
 
-                            <div
-                                id="messagesContainer"
-                                style="
-                                    min-height: 350px;
-                                    max-height: 500px;
-                                    overflow-y: auto;
-                                "
-                            ></div>
 
-                           <div class="mt-3">
-
-    <div id="selectedMessageFile" class="text-muted small mb-2"></div>
-
-    <div class="d-flex align-items-center gap-2">
-
-        <input
-            type="text"
-            id="messageInput"
-            class="form-control"
-            placeholder="כתוב הודעה..."
-        >
-
-        <input
-            type="file"
-            id="messageImageInput"
-            accept="image/*"
-            style="display: none;"
-        >
-
-        <input
-            type="file"
-            id="messageVideoInput"
-            accept="video/*"
-            style="display: none;"
-        >
-
-        <button
-            type="button"
-            id="selectMessageImageBtn"
-            class="btn btn-light"
-            title="שלח תמונה"
-        >
-            <i class="bi bi-image fs-5"></i>
-        </button>
-
-        <button
-            type="button"
-            id="selectMessageVideoBtn"
-            class="btn btn-light"
-            title="שלח סרטון"
-        >
-            <i class="bi bi-camera-video-fill fs-5"></i>
-        </button>
-
-        <button
-            type="button"
-            id="sendMessageBtn"
-            class="btn btn-primary"
-        >
-            <i class="bi bi-send-fill"></i>
-        </button>
-
-    </div>
-
-</div>
+                            <!-- רשימת השיחות -->
+                            <div id="conversationsContainer"></div>
 
                         </div>
 
                     </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     אזור השיחה
+                ====================================== -->
+
+                <div class="col-lg-8">
+
+                    <div class="card">
+
+                        <div class="card-body">
+
+
+                            <!-- אין שיחה פתוחה -->
+                            <div
+                                id="emptyConversation"
+                                class="text-center text-muted py-5"
+                            >
+                                <i class="bi bi-chat-dots fs-1 d-block mb-3"></i>
+
+                                בחר שיחה כדי להתחיל
+                            </div>
+
+
+
+                            <!-- שיחה פתוחה -->
+                            <div
+                                id="conversationArea"
+                                style="display: none;"
+                            >
+
+
+                                <!-- משתמש -->
+                                <div
+                                    class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3"
+                                >
+
+                                    <img
+                                        id="conversationUserImage"
+                                        src="harel.jpg"
+                                        alt="Profile"
+                                        class="rounded-circle"
+                                        width="45"
+                                        height="45"
+                                        style="object-fit: cover;"
+                                    >
+
+                                    <strong
+                                        id="conversationUserName"
+                                    ></strong>
+
+                                </div>
+
+
+
+                                <!-- הודעות -->
+                                <div
+                                    id="messagesContainer"
+                                    style="
+                                        min-height: 350px;
+                                        max-height: 500px;
+                                        overflow-y: auto;
+                                    "
+                                ></div>
+
+
+
+                                <!-- =================================
+                                     כתיבת הודעה
+                                ================================== -->
+
+                                <div class="mt-3">
+
+                                    <div
+                                        id="selectedMessageFile"
+                                        class="text-muted small mb-2"
+                                    ></div>
+
+
+                                    <div
+                                        class="d-flex align-items-center gap-2"
+                                    >
+
+
+                                        <!-- טקסט -->
+                                        <input
+                                            type="text"
+                                            id="messageInput"
+                                            class="form-control"
+                                            placeholder="כתוב הודעה..."
+                                        >
+
+
+                                        <!-- תמונה -->
+                                        <input
+                                            type="file"
+                                            id="messageImageInput"
+                                            accept="image/*"
+                                            style="display: none;"
+                                        >
+
+
+                                        <!-- וידאו -->
+                                        <input
+                                            type="file"
+                                            id="messageVideoInput"
+                                            accept="video/*"
+                                            style="display: none;"
+                                        >
+
+
+                                        <!-- בחירת תמונה -->
+                                        <button
+                                            type="button"
+                                            id="selectMessageImageBtn"
+                                            class="btn btn-light"
+                                            title="שלח תמונה"
+                                        >
+                                            <i class="bi bi-image fs-5"></i>
+                                        </button>
+
+
+                                        <!-- בחירת סרטון -->
+                                        <button
+                                            type="button"
+                                            id="selectMessageVideoBtn"
+                                            class="btn btn-light"
+                                            title="שלח סרטון"
+                                        >
+                                            <i class="bi bi-camera-video-fill fs-5"></i>
+                                        </button>
+
+
+                                        <!-- שליחה -->
+                                        <button
+                                            type="button"
+                                            id="sendMessageBtn"
+                                            class="btn btn-primary"
+                                            title="שלח הודעה"
+                                        >
+                                            <i class="bi bi-send-fill"></i>
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
         </div>
 
-    </div>
+    </main>
 
+
+    <!-- Bootstrap -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+    <!-- ניווט משותף -->
+    <script src="navigation.js"></script>
+
+
+    <!-- מערכת הודעות -->
     <script src="messages.js"></script>
 
 </body>
+
 </html>

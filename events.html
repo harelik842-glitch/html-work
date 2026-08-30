@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>אירועים</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-light">
+
+    <div id="sharedNavigation"></div>
+
+    <main class="shared-page-main">
+
+        <div class="container-fluid py-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-calendar-event-fill text-primary"></i>
+                        אירועים
+                    </h2>
+
+                    <div class="text-muted">
+                        אירועים קרובים בפייסבוק
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#createEventModal"
+                >
+                    <i class="bi bi-plus-lg"></i>
+                    צור אירוע חדש
+                </button>
+
+            </div>
+
+            <h4 class="mb-3">
+                אירועים קרובים
+            </h4>
+
+            <div
+                id="eventsContainer"
+                class="events-grid"
+            >
+                <div class="text-muted">
+                    טוען אירועים...
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div
+        class="modal fade"
+        id="eventDetailsModal"
+        tabindex="-1"
+        aria-hidden="true"
+    >
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5
+                        id="eventModalHeader"
+                        class="modal-title"
+                    >
+                        פרטי האירוע
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+                <div class="modal-body p-0">
+
+                    <img
+                        id="eventModalImage"
+                        src=""
+                        alt="Event"
+                        class="event-modal-image"
+                    >
+
+                    <div class="p-4">
+
+                        <h2
+                            id="eventModalName"
+                            class="mb-3"
+                        ></h2>
+
+                        <div
+                            id="eventModalDate"
+                            class="mb-2 text-muted"
+                        ></div>
+
+                        <div
+                            id="eventModalLocation"
+                            class="mb-3 text-muted"
+                        ></div>
+
+                        <hr>
+
+                        <h5>
+                            תיאור
+                        </h5>
+
+                        <p
+                            id="eventModalDescription"
+                            class="text-muted"
+                        ></p>
+
+                        <hr>
+
+                        <div class="mb-3">
+
+                            <div class="fw-bold mb-2">
+                                נוצר על ידי
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+
+                                <img
+                                    id="eventCreatorImage"
+                                    src="harel.jpg"
+                                    class="rounded-circle"
+                                    width="42"
+                                    height="42"
+                                    style="object-fit: cover;"
+                                >
+
+                                <span id="eventCreatorName"></span>
+
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                            <div>
+
+                                <div class="text-muted small">
+                                    משתתפים
+                                </div>
+
+                                <strong id="eventAttendeesCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+                            <div class="d-flex gap-2">
+
+                                <button
+                                    type="button"
+                                    id="eventNotGoingBtn"
+                                    class="btn btn-light"
+                                >
+                                    לא אגיע
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="eventGoingBtn"
+                                    class="btn btn-primary"
+                                >
+                                    <i class="bi bi-check-circle"></i>
+                                    מגיע
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="eventAttendeesPreview"
+                            class="d-flex flex-wrap gap-2 mt-3"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="modal fade"
+        id="createEventModal"
+        tabindex="-1"
+        aria-hidden="true"
+    >
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        צור אירוע חדש
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="createEventForm">
+
+                        <div class="mb-3">
+
+                            <label
+                                for="eventName"
+                                class="form-label"
+                            >
+                                שם האירוע
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eventName"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="eventDate"
+                                class="form-label"
+                            >
+                                תאריך ושעה
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="eventDate"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="eventLocation"
+                                class="form-label"
+                            >
+                                מיקום
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eventLocation"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="eventDescription"
+                                class="form-label"
+                            >
+                                תיאור האירוע
+                            </label>
+
+                            <textarea
+                                id="eventDescription"
+                                class="form-control"
+                                rows="4"
+                            ></textarea>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="eventImage"
+                                class="form-label"
+                            >
+                                תמונת האירוע
+                            </label>
+
+                            <input
+                                type="file"
+                                id="eventImage"
+                                class="form-control"
+                                accept="image/*"
+                            >
+
+                        </div>
+
+                        <div
+                            id="eventImagePreviewContainer"
+                            class="mb-3"
+                            hidden
+                        >
+
+                            <img
+                                id="eventImagePreview"
+                                src=""
+                                class="img-fluid rounded"
+                                alt="Preview"
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            צור אירוע
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="navigation.js"></script>
+    <script src="events.js"></script>
+
+</body>
+
+</html>

@@ -1,187 +1,678 @@
 let currentUser = null;
 
+
+// ==========================================
+// טעינת המשתמש המחובר
+// ==========================================
+
 async function loadCurrentUser() {
     try {
-        const response = await fetch('/api/current-user');
+
+        const response =
+            await fetch('/api/current-user');
 
         if (!response.ok) {
-            return;
+            return false;
         }
 
-        currentUser = await response.json();
+        currentUser =
+            await response.json();
+
+        return true;
 
     } catch (error) {
-        console.error('Error loading current user:', error);
+
+        console.error(
+            'Error loading current user:',
+            error
+        );
+
+        return false;
     }
 }
 
-async function loadUsers() {
-    try {
-        const response = await fetch('/api/users');
 
-        if (!response.ok) {
-            return;
-        }
+// ==========================================
+// מעבר בין טאבים
+// ==========================================
 
-        const users = await response.json();
+function initializeTabs() {
 
-        const usersContainer =
-            document.getElementById('usersContainer');
+    const requestsTab =
+        document.getElementById(
+            'friendRequestsTab'
+        );
 
-        const friendsContainer =
-            document.getElementById('friendsContainer');
+    const allTab =
+        document.getElementById(
+            'allFriendsTab'
+        );
 
-        usersContainer.innerHTML = '';
-        friendsContainer.innerHTML = '';
+    const requestsSection =
+        document.getElementById(
+            'friendRequestsSection'
+        );
 
-        users.forEach(user => {
-            const isFriend =
-                currentUser.friends?.some(
-                    friendId => friendId.toString() === user._id.toString()
-                );
+    const allSection =
+        document.getElementById(
+            'allFriendsSection'
+        );
 
-            const userElement =
-                document.createElement('div');
 
-            userElement.className =
-                'd-flex justify-content-between align-items-center border rounded p-3 mb-2';
+    requestsTab.addEventListener(
+        'click',
+        function () {
 
-            userElement.innerHTML = `
-                <a
-    href="profile.html?userId=${user._id}"
-    class="d-flex align-items-center gap-3 text-decoration-none text-dark"
->
-    <img
-        src="${user.profileImage || 'harel.jpg'}"
-        alt="Profile"
-        class="rounded-circle"
-        width="55"
-        height="55"
-        style="object-fit: cover;"
-    >
+            requestsSection.hidden = false;
+            allSection.hidden = true;
 
-    <div>
-        <strong>
-            ${user.firstName || ''}
-            ${user.lastName || ''}
-        </strong>
-
-        <div class="text-muted small">
-            @${user.username || ''}
-        </div>
-
-        <div class="text-muted small">
-            ${user.city || ''}
-        </div>
-    </div>
-</a>
-
-               ${isFriend ? `
-    <button
-        class="btn btn-outline-danger btn-sm remove-friend-btn"
-        data-id="${user._id}">
-        <i class="bi bi-person-dash"></i>
-        הסר חבר
-    </button>
-` : `
-                    <button
-                        class="btn btn-primary btn-sm add-friend-btn"
-                        data-id="${user._id}">
-                        <i class="bi bi-person-plus"></i>
-                        הוסף חבר
-                    </button>
-                `}
-            `;
-
-            if (isFriend) {
-                friendsContainer.appendChild(userElement);
-            } else {
-                usersContainer.appendChild(userElement);
-            }
-        });
-
-        const addFriendButtons =
-            document.querySelectorAll('.add-friend-btn');
-
-        addFriendButtons.forEach(button => {
-            button.addEventListener('click', async function () {
-                const friendId = this.dataset.id;
-
-                try {
-                    const response = await fetch(
-                        `/api/users/${friendId}/friend`,
-                        {
-                            method: 'PUT'
-                        }
-                    );
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        alert('החבר נוסף בהצלחה');
-                        await loadCurrentUser();
-                        loadUsers();
-                    } else {
-                        alert(
-                            data.message ||
-                            'אירעה שגיאה בהוספת חבר'
-                        );
-                    }
-
-                } catch (error) {
-                    console.error(error);
-                    alert('לא ניתן להתחבר לשרת');
-                }
-            });
-
-            
-        });
-
-        const removeFriendButtons =
-    document.querySelectorAll('.remove-friend-btn');
-
-removeFriendButtons.forEach(button => {
-    button.addEventListener('click', async function () {
-        const friendId = this.dataset.id;
-
-        try {
-            const response = await fetch(
-                `/api/users/${friendId}/friend`,
-                {
-                    method: 'DELETE'
-                }
+            requestsTab.classList.add(
+                'text-primary'
             );
 
-            const data = await response.json();
+            requestsTab.classList.remove(
+                'text-secondary'
+            );
 
-            if (response.ok) {
-                alert('החבר הוסר בהצלחה');
+            allTab.classList.add(
+                'text-secondary'
+            );
 
-                await loadCurrentUser();
-                loadUsers();
-
-            } else {
-                alert(
-                    data.message ||
-                    'אירעה שגיאה בהסרת החבר'
-                );
-            }
-
-        } catch (error) {
-            console.error(error);
-            alert('לא ניתן להתחבר לשרת');
+            allTab.classList.remove(
+                'text-primary'
+            );
         }
-    });
-});
+    );
+
+
+    allTab.addEventListener(
+        'click',
+        function () {
+
+            requestsSection.hidden = true;
+            allSection.hidden = false;
+
+            allTab.classList.add(
+                'text-primary'
+            );
+
+            allTab.classList.remove(
+                'text-secondary'
+            );
+
+            requestsTab.classList.add(
+                'text-secondary'
+            );
+
+            requestsTab.classList.remove(
+                'text-primary'
+            );
+        }
+    );
+}
+
+
+// ==========================================
+// טעינת בקשות חברות
+// ==========================================
+
+async function loadFriendRequests() {
+
+    const container =
+        document.getElementById(
+            'friendRequestsContainer'
+        );
+
+    const countBadge =
+        document.getElementById(
+            'friendRequestsCount'
+        );
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const requestIds =
+        currentUser.friendRequestsReceived || [];
+
+
+    // מספר הבקשות
+
+    countBadge.textContent =
+        requestIds.length;
+
+    countBadge.hidden =
+        requestIds.length === 0;
+
+
+    if (requestIds.length === 0) {
+
+        container.innerHTML = `
+            <div class="text-center text-muted py-5">
+
+                <i
+                    class="bi bi-person-check fs-1 d-block mb-2"
+                ></i>
+
+                אין בקשות חברות חדשות
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch('/api/users');
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <div class="text-danger">
+                    לא ניתן לטעון את בקשות החברות
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const users =
+            await response.json();
+
+
+        const requestUsers =
+            users.filter(user =>
+                requestIds.some(requestId =>
+                    requestId.toString() ===
+                    user._id.toString()
+                )
+            );
+
+
+        container.innerHTML = '';
+
+
+        requestUsers.forEach(user => {
+
+            const element =
+                document.createElement('div');
+
+
+            element.className =
+                'd-flex justify-content-between align-items-center border rounded p-3 mb-3';
+
+
+            element.innerHTML = `
+
+                <a
+                    href="profile.html?userId=${user._id}"
+                    class="d-flex align-items-center gap-3 text-decoration-none text-dark"
+                >
+
+                    <img
+                        src="${user.profileImage || 'harel.jpg'}"
+                        alt="Profile"
+                        class="rounded-circle"
+                        width="60"
+                        height="60"
+                        style="object-fit: cover;"
+                    >
+
+                    <div>
+
+                        <strong>
+                            ${user.firstName || ''}
+                            ${user.lastName || ''}
+                        </strong>
+
+                        <div class="text-muted small">
+                            @${user.username || ''}
+                        </div>
+
+                        ${
+                            user.city
+                                ? `
+                                    <div class="text-muted small">
+                                        ${user.city}
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                    </div>
+
+                </a>
+
+
+                <div class="d-flex gap-2">
+
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm accept-request-btn"
+                        data-id="${user._id}"
+                    >
+                        <i class="bi bi-check-lg"></i>
+                        אשר
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-light border btn-sm reject-request-btn"
+                        data-id="${user._id}"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                        דחה
+                    </button>
+
+                </div>
+            `;
+
+
+            container.appendChild(
+                element
+            );
+        });
+
+
+        initializeRequestButtons();
+
 
     } catch (error) {
-        console.error('Error loading users:', error);
+
+        console.error(
+            'Error loading friend requests:',
+            error
+        );
     }
 }
 
-async function initializeFriendsPage() {
-    await loadCurrentUser();
-    loadUsers();
+
+// ==========================================
+// כפתורי אשר / דחה
+// ==========================================
+
+function initializeRequestButtons() {
+
+
+    // אישור
+
+    const acceptButtons =
+        document.querySelectorAll(
+            '.accept-request-btn'
+        );
+
+
+    acceptButtons.forEach(button => {
+
+        button.addEventListener(
+            'click',
+            async function () {
+
+                const senderId =
+                    this.dataset.id;
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/api/users/${senderId}/friend-request/accept`,
+                            {
+                                method: 'PUT'
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            'אירעה שגיאה באישור הבקשה'
+                        );
+
+                        return;
+                    }
+
+
+                    await refreshFriendsPage();
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Accept request error:',
+                        error
+                    );
+
+                    alert(
+                        'לא ניתן להתחבר לשרת'
+                    );
+                }
+            }
+        );
+    });
+
+
+    // דחייה
+
+    const rejectButtons =
+        document.querySelectorAll(
+            '.reject-request-btn'
+        );
+
+
+    rejectButtons.forEach(button => {
+
+        button.addEventListener(
+            'click',
+            async function () {
+
+                const senderId =
+                    this.dataset.id;
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/api/users/${senderId}/friend-request/reject`,
+                            {
+                                method: 'DELETE'
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            'אירעה שגיאה בדחיית הבקשה'
+                        );
+
+                        return;
+                    }
+
+
+                    await refreshFriendsPage();
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Reject request error:',
+                        error
+                    );
+
+                    alert(
+                        'לא ניתן להתחבר לשרת'
+                    );
+                }
+            }
+        );
+    });
 }
+
+
+// ==========================================
+// טעינת כל החברים
+// ==========================================
+
+async function loadFriends() {
+
+    const container =
+        document.getElementById(
+            'friendsContainer'
+        );
+
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const friendIds =
+        currentUser.friends || [];
+
+
+    if (friendIds.length === 0) {
+
+        container.innerHTML = `
+            <div class="text-center text-muted py-5">
+
+                <i
+                    class="bi bi-people fs-1 d-block mb-2"
+                ></i>
+
+                עדיין אין חברים
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch('/api/users');
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        const users =
+            await response.json();
+
+
+        const friends =
+            users.filter(user =>
+                friendIds.some(friendId =>
+                    friendId.toString() ===
+                    user._id.toString()
+                )
+            );
+
+
+        container.innerHTML = '';
+
+
+        friends.forEach(user => {
+
+            const element =
+                document.createElement('div');
+
+
+            element.className =
+                'd-flex justify-content-between align-items-center border rounded p-3 mb-3';
+
+
+            element.innerHTML = `
+
+                <a
+                    href="profile.html?userId=${user._id}"
+                    class="d-flex align-items-center gap-3 text-decoration-none text-dark"
+                >
+
+                    <img
+                        src="${user.profileImage || 'harel.jpg'}"
+                        alt="Profile"
+                        class="rounded-circle"
+                        width="60"
+                        height="60"
+                        style="object-fit: cover;"
+                    >
+
+                    <div>
+
+                        <strong>
+                            ${user.firstName || ''}
+                            ${user.lastName || ''}
+                        </strong>
+
+                        <div class="text-muted small">
+                            @${user.username || ''}
+                        </div>
+
+                        ${
+                            user.city
+                                ? `
+                                    <div class="text-muted small">
+                                        ${user.city}
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                    </div>
+
+                </a>
+
+
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm remove-friend-btn"
+                    data-id="${user._id}"
+                >
+                    <i class="bi bi-person-dash"></i>
+                    הסר חבר
+                </button>
+            `;
+
+
+            container.appendChild(
+                element
+            );
+        });
+
+
+        initializeRemoveFriendButtons();
+
+
+    } catch (error) {
+
+        console.error(
+            'Error loading friends:',
+            error
+        );
+    }
+}
+
+
+// ==========================================
+// הסרת חבר
+// ==========================================
+
+function initializeRemoveFriendButtons() {
+
+    const buttons =
+        document.querySelectorAll(
+            '.remove-friend-btn'
+        );
+
+
+    buttons.forEach(button => {
+
+        button.addEventListener(
+            'click',
+            async function () {
+
+                const friendId =
+                    this.dataset.id;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/api/users/${friendId}/friend`,
+                            {
+                                method: 'DELETE'
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            'אירעה שגיאה בהסרת החבר'
+                        );
+
+                        return;
+                    }
+
+
+                    await refreshFriendsPage();
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Remove friend error:',
+                        error
+                    );
+
+                    alert(
+                        'לא ניתן להתחבר לשרת'
+                    );
+                }
+            }
+        );
+    });
+}
+
+
+// ==========================================
+// רענון הנתונים
+// ==========================================
+
+async function refreshFriendsPage() {
+
+    await loadCurrentUser();
+
+    await loadFriendRequests();
+
+    await loadFriends();
+}
+
+
+// ==========================================
+// הפעלת העמוד
+// ==========================================
+
+async function initializeFriendsPage() {
+
+    const loaded =
+        await loadCurrentUser();
+
+    if (!loaded) {
+        return;
+    }
+
+    initializeTabs();
+
+    await loadFriendRequests();
+
+    await loadFriends();
+}
+
 
 initializeFriendsPage();

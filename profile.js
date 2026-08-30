@@ -57,43 +57,82 @@ const friendButton =
     document.getElementById('profileFriendBtn');
 
 if (friendButton) {
+
     if (isOwnProfile) {
+
         friendButton.style.display = 'none';
+
     } else {
+
         friendButton.style.display = 'inline-block';
 
         try {
+
             const currentUserResponse =
                 await fetch('/api/current-user');
 
             if (currentUserResponse.ok) {
+
                 const currentUser =
                     await currentUserResponse.json();
 
                 const alreadyFriends =
                     currentUser.friends?.some(
                         friendId =>
-                            friendId.toString() === profileUserId
+                            friendId.toString() ===
+                            profileUserId
+                    );
+
+                const requestAlreadySent =
+                    currentUser.friendRequestsSent?.some(
+                        friendId =>
+                            friendId.toString() ===
+                            profileUserId
                     );
 
                 if (alreadyFriends) {
+
                     friendButton.innerHTML = `
                         <i class="bi bi-person-dash-fill"></i>
                         הסר חבר
                     `;
 
-                    friendButton.dataset.friendStatus = 'friend';
-                } else {
+                    friendButton.dataset.friendStatus =
+                        'friend';
+
+                    friendButton.disabled =
+                        false;
+
+                } else if (requestAlreadySent) {
+
                     friendButton.innerHTML = `
-                        <i class="bi bi-person-plus-fill"></i>
-                        הוסף חבר
+                        <i class="bi bi-check-circle-fill"></i>
+                        נשלחה בקשת חברות
                     `;
 
-                    friendButton.dataset.friendStatus = 'not-friend';
+                    friendButton.dataset.friendStatus =
+                        'request-sent';
+
+                    friendButton.disabled =
+                        false;
+
+                } else {
+
+                    friendButton.innerHTML = `
+                        <i class="bi bi-person-plus-fill"></i>
+                        שלח בקשת חברות
+                    `;
+
+                    friendButton.dataset.friendStatus =
+                        'not-friend';
+
+                    friendButton.disabled =
+                        false;
                 }
             }
 
         } catch (error) {
+
             console.error(
                 'Error checking friendship:',
                 error
@@ -101,6 +140,7 @@ if (friendButton) {
         }
     }
 }
+
 const messageButton = document.getElementById('profileMessageBtn');
 
 if (messageButton) {
@@ -227,6 +267,17 @@ if (createPostProfileImage && user.profileImage) {
             }
         }
 
+
+        const deleteAccountBtn =
+    document.getElementById('deleteAccountBtn');
+
+if (deleteAccountBtn) {
+    deleteAccountBtn.style.display =
+        isOwnProfile
+            ? 'inline-block'
+            : 'none';
+}  
+
     } catch (error) {
         console.error(
             'Error loading profile:',
@@ -236,43 +287,151 @@ if (createPostProfileImage && user.profileImage) {
 }
 
 
-const profileFriendBtn = document.getElementById('profileFriendBtn');
+const profileFriendBtn =
+    document.getElementById('profileFriendBtn');
 
 if (profileFriendBtn) {
-    profileFriendBtn.addEventListener('click', async function () {
-        if (!profileUserId) {
-            return;
-        }
 
-        const isFriend =
-            this.dataset.friendStatus === 'friend';
+    profileFriendBtn.addEventListener(
+        'click',
+        async function () {
 
-        const method = isFriend ? 'DELETE' : 'PUT';
-
-        try {
-            const response = await fetch(
-                `/api/users/${profileUserId}/friend`,
-                {
-                    method: method
-                }
-            );
-
-            const data = await response.json();
-
-            if (response.ok) {
-                await loadProfile();
-            } else {
-                alert(
-                    data.message ||
-                    'אירעה שגיאה בעדכון החברות'
-                );
+            if (!profileUserId) {
+                return;
             }
 
-        } catch (error) {
-            console.error(error);
-            alert('לא ניתן להתחבר לשרת');
+            const status =
+                this.dataset.friendStatus;
+
+            try {
+
+                // =========================
+                // ביטול בקשת חברות
+                // =========================
+
+                if (status === 'request-sent') {
+
+                    const response =
+                        await fetch(
+                            `/api/users/${profileUserId}/friend-request/cancel`,
+                            {
+                                method: 'DELETE'
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            'אירעה שגיאה בביטול הבקשה'
+                        );
+
+                        return;
+                    }
+
+                    this.innerHTML = `
+                        <i class="bi bi-person-plus-fill"></i>
+                        שלח בקשת חברות
+                    `;
+
+                    this.dataset.friendStatus =
+                        'not-friend';
+
+                    return;
+                }
+
+
+                // =========================
+                // הסרת חבר קיים
+                // =========================
+
+                if (status === 'friend') {
+
+                    const response =
+                        await fetch(
+                            `/api/users/${profileUserId}/friend`,
+                            {
+                                method: 'DELETE'
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            'אירעה שגיאה בהסרת החבר'
+                        );
+
+                        return;
+                    }
+
+                    this.innerHTML = `
+                        <i class="bi bi-person-plus-fill"></i>
+                        שלח בקשת חברות
+                    `;
+
+                    this.dataset.friendStatus =
+                        'not-friend';
+
+                    return;
+                }
+
+
+                // =========================
+                // שליחת בקשת חברות
+                // =========================
+
+                const response =
+                    await fetch(
+                        `/api/users/${profileUserId}/friend`,
+                        {
+                            method: 'PUT'
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        'אירעה שגיאה בשליחת הבקשה'
+                    );
+
+                    return;
+                }
+
+                this.innerHTML = `
+                    <i class="bi bi-check-circle-fill"></i>
+                    נשלחה בקשת חברות
+                `;
+
+                this.dataset.friendStatus =
+                    'request-sent';
+
+                this.disabled =
+                    false;
+
+            } catch (error) {
+
+                console.error(
+                    'Friend button error:',
+                    error
+                );
+
+                alert(
+                    'לא ניתן להתחבר לשרת'
+                );
+            }
         }
-    });
+    );
 }
     
 
@@ -671,6 +830,7 @@ document.getElementById('coverImageInput').addEventListener('change', async func
 
 
 document.getElementById('friendsTab').addEventListener('click', async function () {
+
     const postsTab = document.getElementById('postsTab');
     const friendsTab = document.getElementById('friendsTab');
     const groupsTab = document.getElementById('groupsTab');
@@ -680,49 +840,160 @@ document.getElementById('friendsTab').addEventListener('click', async function (
     groupsTab.classList.remove('active');
     friendsTab.classList.add('active');
 
-    sectionTitle.textContent = 'החברים שלי';
+    sectionTitle.textContent =
+        isOwnProfile
+            ? 'החברים שלי'
+            : 'חברים';
 
-    const postsContainer = document.getElementById('myPostsContainer');
-    const friendsContainer = document.getElementById('profileFriendsContainer');
-    const groupsContainer = document.getElementById('profileGroupsContainer');
+    const postsContainer =
+        document.getElementById('myPostsContainer');
+
+    const friendsContainer =
+        document.getElementById('profileFriendsContainer');
+
+    const groupsContainer =
+        document.getElementById('profileGroupsContainer');
 
     postsContainer.style.display = 'none';
     groupsContainer.style.display = 'none';
     friendsContainer.style.display = 'block';
 
+
     try {
+
+        // המשתמש המחובר
+        const currentUserResponse =
+            await fetch('/api/current-user');
+
+        if (!currentUserResponse.ok) {
+            return;
+        }
+
+        const loggedInUser =
+            await currentUserResponse.json();
+
+
+        // החברים של הפרופיל שבו נמצאים
         const response = profileUserId
-            ? await fetch(`/api/users/${profileUserId}/friends`)
-            : await fetch('/api/my-friends');
+            ? await fetch(
+                `/api/users/${profileUserId}/friends`
+            )
+            : await fetch(
+                '/api/my-friends'
+            );
 
         if (!response.ok) {
             return;
         }
 
-        const friends = await response.json();
+        const friends =
+            await response.json();
 
         friendsContainer.innerHTML = '';
 
+
         if (friends.length === 0) {
+
             friendsContainer.innerHTML = `
                 <div class="text-muted">
                     עדיין אין חברים להצגה
                 </div>
             `;
+
             return;
         }
 
+
         friends.forEach(friend => {
-            const friendElement = document.createElement('div');
+
+            const friendElement =
+                document.createElement('div');
 
             friendElement.className =
                 'd-flex justify-content-between align-items-center border-bottom py-3';
 
+
+            // =====================================
+            // בדיקת הקשר שלי עם אותו משתמש
+            // =====================================
+
+            const isMe =
+                loggedInUser._id?.toString() ===
+                friend._id?.toString();
+
+
+            const isMyFriend =
+                loggedInUser.friends?.some(
+                    friendId =>
+                        friendId.toString() ===
+                        friend._id.toString()
+                );
+
+
+            const requestSent =
+                loggedInUser.friendRequestsSent?.some(
+                    requestId =>
+                        requestId.toString() ===
+                        friend._id.toString()
+                );
+
+
+            // =====================================
+            // בחירת הכפתור
+            // =====================================
+
+            let actionButton = '';
+
+
+            if (!isMe) {
+
+                if (isMyFriend) {
+
+                    actionButton = `
+                        <button
+                            class="btn btn-outline-danger btn-sm remove-profile-friend-btn"
+                            data-id="${friend._id}"
+                        >
+                            <i class="bi bi-person-dash"></i>
+                            הסר חבר
+                        </button>
+                    `;
+
+                } else if (requestSent) {
+
+                    actionButton = `
+                        <button
+                            class="btn btn-secondary btn-sm cancel-profile-request-btn"
+                            data-id="${friend._id}"
+                            title="לחץ לביטול בקשת החברות"
+                        >
+                            <i class="bi bi-check-circle-fill"></i>
+                            נשלחה בקשת חברות
+                        </button>
+                    `;
+
+                } else {
+
+                    actionButton = `
+                        <button
+                            class="btn btn-primary btn-sm send-profile-request-btn"
+                            data-id="${friend._id}"
+                        >
+                            <i class="bi bi-person-plus"></i>
+                            שלח בקשת חברות
+                        </button>
+                    `;
+                }
+            }
+
+
             friendElement.innerHTML = `
+
                 <a
                     href="profile.html?userId=${friend._id}"
                     class="d-flex align-items-center gap-3 text-decoration-none text-dark"
                 >
+
                     <img
                         src="${friend.profileImage || 'harel.jpg'}"
                         alt="Profile"
@@ -733,6 +1004,7 @@ document.getElementById('friendsTab').addEventListener('click', async function (
                     >
 
                     <div>
+
                         <strong>
                             ${friend.firstName || ''}
                             ${friend.lastName || ''}
@@ -745,69 +1017,214 @@ document.getElementById('friendsTab').addEventListener('click', async function (
                         <div class="text-muted small">
                             ${friend.city || ''}
                         </div>
+
                     </div>
+
                 </a>
 
-                ${isOwnProfile ? `
-                    <button
-                        class="btn btn-outline-danger btn-sm remove-profile-friend-btn"
-                        data-id="${friend._id}">
-                        <i class="bi bi-person-dash"></i>
-                        הסר חבר
-                    </button>
-                ` : ''}
+                ${actionButton}
             `;
 
-            friendsContainer.appendChild(friendElement);
 
-            const removeButton =
-                friendElement.querySelector('.remove-profile-friend-btn');
+            friendsContainer.appendChild(
+                friendElement
+            );
 
-            if (removeButton) {
-                removeButton.addEventListener('click', async function () {
-                    const friendId = this.dataset.id;
 
-                    try {
-                        const response = await fetch(
-                            `/api/users/${friendId}/friend`,
-                            {
-                                method: 'DELETE'
+            // =====================================
+            // שליחת בקשת חברות
+            // =====================================
+
+            const sendButton =
+                friendElement.querySelector(
+                    '.send-profile-request-btn'
+                );
+
+
+            if (sendButton) {
+
+                sendButton.addEventListener(
+                    'click',
+                    async function () {
+
+                        const friendId =
+                            this.dataset.id;
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `/api/users/${friendId}/friend`,
+                                    {
+                                        method: 'PUT'
+                                    }
+                                );
+
+                            const data =
+                                await response.json();
+
+                            if (!response.ok) {
+
+                                alert(
+                                    data.message ||
+                                    'אירעה שגיאה בשליחת בקשת החברות'
+                                );
+
+                                return;
                             }
-                        );
 
-                        const data = await response.json();
 
-                        if (response.ok) {
-                            friendElement.remove();
+                            this.className =
+                                'btn btn-secondary btn-sm cancel-profile-request-btn';
 
-                            const friendsCount =
-                                document.getElementById('friendsCount');
+                            this.innerHTML = `
+                                <i class="bi bi-check-circle-fill"></i>
+                                נשלחה בקשת חברות
+                            `;
 
-                            if (friendsCount) {
-                                const currentCount =
-                                    parseInt(friendsCount.textContent) || 0;
+                            // טעינה מחדש של הטאב
+                            friendsTab.click();
 
-                                friendsCount.textContent =
-                                    Math.max(0, currentCount - 1);
-                            }
 
-                        } else {
+                        } catch (error) {
+
+                            console.error(error);
+
                             alert(
-                                data.message ||
-                                'אירעה שגיאה בהסרת החבר'
+                                'לא ניתן להתחבר לשרת'
                             );
                         }
-
-                    } catch (error) {
-                        console.error(error);
-                        alert('לא ניתן להתחבר לשרת');
                     }
-                });
+                );
             }
+
+
+            // =====================================
+            // ביטול בקשת חברות
+            // =====================================
+
+            const cancelButton =
+                friendElement.querySelector(
+                    '.cancel-profile-request-btn'
+                );
+
+
+            if (cancelButton) {
+
+                cancelButton.addEventListener(
+                    'click',
+                    async function () {
+
+                        const friendId =
+                            this.dataset.id;
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `/api/users/${friendId}/friend-request/cancel`,
+                                    {
+                                        method: 'DELETE'
+                                    }
+                                );
+
+                            const data =
+                                await response.json();
+
+                            if (!response.ok) {
+
+                                alert(
+                                    data.message ||
+                                    'אירעה שגיאה בביטול בקשת החברות'
+                                );
+
+                                return;
+                            }
+
+
+                            friendsTab.click();
+
+
+                        } catch (error) {
+
+                            console.error(error);
+
+                            alert(
+                                'לא ניתן להתחבר לשרת'
+                            );
+                        }
+                    }
+                );
+            }
+
+
+            // =====================================
+            // הסרת חבר
+            // =====================================
+
+            const removeButton =
+                friendElement.querySelector(
+                    '.remove-profile-friend-btn'
+                );
+
+
+            if (removeButton) {
+
+                removeButton.addEventListener(
+                    'click',
+                    async function () {
+
+                        const friendId =
+                            this.dataset.id;
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `/api/users/${friendId}/friend`,
+                                    {
+                                        method: 'DELETE'
+                                    }
+                                );
+
+                            const data =
+                                await response.json();
+
+                            if (!response.ok) {
+
+                                alert(
+                                    data.message ||
+                                    'אירעה שגיאה בהסרת החבר'
+                                );
+
+                                return;
+                            }
+
+
+                            friendsTab.click();
+
+
+                        } catch (error) {
+
+                            console.error(error);
+
+                            alert(
+                                'לא ניתן להתחבר לשרת'
+                            );
+                        }
+                    }
+                );
+            }
+
         });
 
+
     } catch (error) {
-        console.error('Error loading friends:', error);
+
+        console.error(
+            'Error loading friends:',
+            error
+        );
     }
 });
 
@@ -821,8 +1238,7 @@ document.getElementById('postsTab').addEventListener('click', function () {
     friendsTab.classList.remove('active');
     groupsTab.classList.remove('active');
 
-    sectionTitle.textContent = 'הפוסטים שלי';
-
+sectionTitle.textContent = isOwnProfile ? 'הפוסטים שלי' : 'פוסטים';
     document.getElementById('myPostsContainer').style.display = 'block';
     document.getElementById('profileFriendsContainer').style.display = 'none';
     document.getElementById('profileGroupsContainer').style.display = 'none';
@@ -839,8 +1255,7 @@ document.getElementById('groupsTab').addEventListener('click', async function ()
     friendsTab.classList.remove('active');
     groupsTab.classList.add('active');
 
-    sectionTitle.textContent = 'הקבוצות שלי';
-
+sectionTitle.textContent = isOwnProfile ? 'הקבוצות שלי' : 'קבוצות';
     document.getElementById('myPostsContainer').style.display = 'none';
     document.getElementById('profileFriendsContainer').style.display = 'none';
     document.getElementById('profileGroupsContainer').style.display = 'block';
@@ -1270,6 +1685,65 @@ document.querySelectorAll('.profile-feeling-option').forEach(button => {
         }
     });
 });
+
+const deleteAccountBtn =
+    document.getElementById('deleteAccountBtn');
+
+if (deleteAccountBtn) {
+
+    deleteAccountBtn.addEventListener(
+        'click',
+        async function () {
+
+            const confirmed = confirm(
+                'האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו אינה ניתנת לביטול.'
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    '/api/users/me',
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        'אירעה שגיאה במחיקת החשבון'
+                    );
+
+                    return;
+                }
+
+                alert('החשבון נמחק בהצלחה');
+
+                window.location.href =
+                    'index.html';
+
+            } catch (error) {
+
+                console.error(
+                    'DELETE ACCOUNT ERROR:',
+                    error
+                );
+
+                alert(
+                    'לא ניתן להתחבר לשרת'
+                );
+            }
+        }
+    );
+}
 
 async function initializeProfile() {
     await loadProfile();

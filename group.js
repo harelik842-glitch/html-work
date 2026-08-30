@@ -33,33 +33,67 @@ async function loadGroup() {
             return;
         }
 
-        const response = await fetch(`/api/groups/${groupId}`);
+        const [groupResponse, userResponse] =
+            await Promise.all([
+                fetch(`/api/groups/${groupId}`),
+                fetch('/api/current-user')
+            ]);
 
-        if (!response.ok) {
+        if (!groupResponse.ok) {
             return;
         }
 
-        currentGroup = await response.json();
+        currentGroup =
+            await groupResponse.json();
 
-        const groupProfileImage = document.getElementById('groupProfileImage');
+        const currentUser =
+            userResponse.ok
+                ? await userResponse.json()
+                : null;
+
+        const groupProfileImage =
+            document.getElementById(
+                'groupProfileImage'
+            );
 
         if (groupProfileImage) {
-            groupProfileImage.src = currentGroup.image || 'harel.jpg';
+            groupProfileImage.src =
+                currentGroup.image ||
+                'harel.jpg';
         }
 
-        document.getElementById('groupName').textContent = currentGroup.name || '';
+        document.getElementById(
+            'groupName'
+        ).textContent =
+            currentGroup.name || '';
 
-        document.getElementById('groupDescription').textContent = currentGroup.description || '';
+        document.getElementById(
+            'groupDescription'
+        ).textContent =
+            currentGroup.description || '';
 
-        document.getElementById('groupAddress').textContent = currentGroup.address || '';
+        document.getElementById(
+            'groupAddress'
+        ).textContent =
+            currentGroup.address || '';
 
-        document.getElementById('groupMembersCount').textContent = currentGroup.members?.length || 0;
+        document.getElementById(
+            'groupMembersCount'
+        ).textContent =
+            currentGroup.members?.length || 0;
 
-        document.getElementById('groupCreator').textContent =
+        document.getElementById(
+            'groupCreator'
+        ).textContent =
             `${currentGroup.creator?.firstName || ''} ${currentGroup.creator?.lastName || ''}`;
 
+        
+
     } catch (error) {
-        console.error('Error loading group:', error);
+        console.error(
+            'Error loading group:',
+            error
+        );
     }
 }
 
@@ -146,35 +180,71 @@ function updateGroupPermissions() {
         member._id?.toString() === currentUser._id?.toString()
     );
 
-    const creatorId = currentGroup.creator?._id || currentGroup.creator;
+    const creatorId =
+        currentGroup.creator?._id ||
+        currentGroup.creator;
 
     const isCreator =
-        creatorId?.toString() === currentUser._id?.toString();
+        creatorId?.toString() ===
+        currentUser._id?.toString();
 
-    const postBox = document.getElementById('groupPostBox');
-    const joinButton = document.getElementById('joinGroupPageBtn');
-    const leaveButton = document.getElementById('leaveGroupPageBtn');
-    const editGroupBtn = document.getElementById('editGroupBtn');
 
+    const postBox =
+        document.getElementById('groupPostBox');
+
+    const joinButton =
+        document.getElementById('joinGroupPageBtn');
+
+    const leaveButton =
+        document.getElementById('leaveGroupPageBtn');
+
+    const editGroupBtn =
+        document.getElementById('editGroupBtn');
+
+    const deleteGroupBtn =
+        document.getElementById('deleteGroupBtn');
+
+
+    // יצירת פוסט - רק חברי הקבוצה
     if (postBox) {
-        postBox.style.display = isMember ? 'block' : 'none';
+        postBox.style.display =
+            isMember ? 'block' : 'none';
     }
 
+
+    // הצטרפות - רק מי שלא חבר
     if (joinButton) {
-        joinButton.style.display = isMember ? 'none' : 'inline-block';
+        joinButton.style.display =
+            isMember ? 'none' : 'inline-block';
     }
 
+
+    // עזיבת קבוצה - חבר שאינו היוצר
     if (leaveButton) {
         leaveButton.style.display =
-            isMember && !isCreator ? 'inline-block' : 'none';
+            isMember && !isCreator
+                ? 'inline-block'
+                : 'none';
     }
 
+
+    // עריכת קבוצה - רק היוצר
     if (editGroupBtn) {
         editGroupBtn.style.display =
-            isCreator ? 'inline-block' : 'none';
+            isCreator
+                ? 'inline-block'
+                : 'none';
+    }
+
+
+    // מחיקת קבוצה - רק היוצר
+    if (deleteGroupBtn) {
+        deleteGroupBtn.style.display =
+            isCreator
+                ? 'inline-block'
+                : 'none';
     }
 }
-
 
 document.getElementById('publishGroupPostBtn').addEventListener('click', async function () {
     const text = document.getElementById('groupPostText').value.trim();
@@ -398,6 +468,7 @@ async function loadGroupPosts() {
 
         posts.forEach(post => {
             const postElement = document.createElement('div');
+            postElement.id = `group-post-${post._id}`;
             postElement.className = 'card mb-3';
 
             postElement.innerHTML = `
@@ -921,6 +992,105 @@ if (cancelGroupEditBtn) {
     });
 }
 
+const deleteGroupBtn =
+    document.getElementById(
+        'deleteGroupBtn'
+    );
+
+if (deleteGroupBtn) {
+
+    deleteGroupBtn.addEventListener(
+        'click',
+        async function () {
+
+            const confirmed =
+                confirm(
+                    'האם אתה בטוח שברצונך למחוק את הקבוצה?'
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/groups/${groupId}`,
+                        {
+                            method: 'DELETE'
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        'אירעה שגיאה במחיקת הקבוצה'
+                    );
+
+                    return;
+                }
+
+                alert(
+                    'הקבוצה נמחקה בהצלחה'
+                );
+
+                window.location.href =
+                    'groups.html';
+
+            } catch (error) {
+
+                console.error(
+                    'Delete group error:',
+                    error
+                );
+
+                alert(
+                    'לא ניתן להתחבר לשרת'
+                );
+            }
+        }
+    );
+}
+
+function scrollToGroupNotificationPost() {
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get('postId');
+
+    if (!postId) {
+        return;
+    }
+
+    const postElement =
+        document.getElementById(`group-post-${postId}`);
+
+    if (!postElement) {
+        return;
+    }
+
+    setTimeout(() => {
+        const postTop =
+            postElement.getBoundingClientRect().top +
+            window.scrollY;
+
+        window.scrollTo({
+            top: postTop - 80,
+            behavior: 'smooth'
+        });
+
+        postElement.classList.add('shadow-lg');
+
+        setTimeout(() => {
+            postElement.classList.remove('shadow-lg');
+        }, 2000);
+
+    }, 1500);
+}
+scrollToGroupNotificationPost();
 
 async function initializeGroupPage() {
     await loadCurrentUser();

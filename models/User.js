@@ -64,6 +64,21 @@ const userSchema = new mongoose.Schema({
     ref: 'User'
 }],
 
+friendRequestsReceived: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+}],
+
+friendRequestsSent: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+}],
+
+savedPosts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+}]
+
 });
 
 const User = mongoose.model('User', userSchema);

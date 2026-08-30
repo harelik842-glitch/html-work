@@ -6,196 +6,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-light bg-white shadow-sm">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
+    <div id="sharedNavigation"></div>
+
+<div class="container mt-4">
+    <div class="row">
+
+        <div class="col-lg-3 d-none d-lg-block"></div>
+
         
-        <div class="d-flex align-items-center">
-<img src="harel.jpg" alt="Facebook Logo" width="40" height="40" class="current-user-profile-image">
-
-            <div class="position-relative ms-2" style="width: 250px;">
-
-    <div class="input-group">
-        <span class="input-group-text bg-light border-0">
-            <i class="bi bi-search"></i>
-        </span>
-
-        <input
-            type="text"
-            id="mainSearchInput"
-            class="form-control bg-light border-0"
-            placeholder="חפש בפייסבוק..."
-            autocomplete="off"
-        >
-    </div>
-
-    <div
-        id="mainSearchResults"
-        class="position-absolute bg-white border rounded shadow w-100 mt-1"
-        style="
-            display: none;
-            z-index: 2000;
-            max-height: 420px;
-            overflow-y: auto;
-        "
-    ></div>
-
-</div>
-        </div>
-
-        <div class="d-flex gap-5 fs-4">
-            <a href="#" class="text-primary border-bottom border-primary border-3 px-2 pb-1"><i class="bi bi-house-door-fill"></i></a>
-            <a href="media.html" class="text-muted px-2"> <i class="bi bi-tv"></i></a>      
-            <a href="groups.html" class="text-muted px-2"><i class="bi bi-people"></i></a>
-            <a href="shop.html" class="text-muted px-2"><i class="bi bi-shop"></i></a>
-            <a href="profile.html" class="text-muted px-2"><i class="bi bi-person-circle"></i></a>
-        </div>
-
-       <div class="d-flex align-items-center gap-2 fs-4">
-
-    <a href="#" class="text-primary px-1">
-        <i class="bi bi-list"></i>
-    </a>
-
-    <a
-    href="messages.html"
-    class="text-primary px-1 position-relative"
->
-    <i class="bi bi-chat-dots-fill"></i>
-
-    <span
-        id="unreadMessagesBadge"
-class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
-        style="display: none; font-size: 10px;"
-    >
-        0
-    </span>
-</a>
-
-    <a href="#" class="text-primary px-1">
-        <i class="bi bi-bell-fill"></i>
-    </a>
-
-    <div class="position-relative">
-
-        <img
-            src="harel.jpg"
-            alt="Profile"
-            id="homeProfileMenuBtn"
-            class="rounded-circle current-user-profile-image"
-            width="40"
-            height="40"
-            style="object-fit: cover; cursor: pointer;"
-        >
-
-        <div
-            id="homeProfileMenu"
-            class="card shadow position-absolute mt-2"
-            style="display: none; left: 0; min-width: 180px; z-index: 1050;"
-        >
-            <div class="card-body p-2">
-
-                <button
-                    type="button"
-                    id="logoutBtn"
-                    class="btn btn-light w-100 d-flex align-items-center gap-2"
-                >
-                    <i class="bi bi-box-arrow-right"></i>
-                    התנתקות
-                </button>
-
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-    </div> </nav>
-
-    <div class="container mt-4">
-        <div class="row">
-        <div class="col-lg-3 d-none d-lg-block">
-            <div class="d-flex flex-column gap-1" style="position: sticky; top: 70px;">
-                
-                <a href="profile.html" class="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-effect ">
-                    <img src="harel.jpg" alt="Profile" class="rounded-circle me-1 current-user-profile-image" width="36" height="36">
-                    
-                    <span id="currentUserSidebarName">הפרופיל שלי</span>
-                </a>
-
-                <a href="friends.html" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-people-fill fs-4 me-2 ms-5 text-primary"></i>
-                    <span>חברים</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-clock fs-4 me-2 ms-5 text-primary"></i>
-                    <span>זכרונות</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect   p-2">
-                    <i class="bi bi-bookmark-fill fs-4 me-2 ms-5 text-primary"></i>
-                    <span>שמורים</span>
-                </a>
-
-                <a href="groups.html" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-person-raised-hand fs-4 me-2 ms-5 text-primary"></i>
-                    <span>קבוצות</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-film fs-4 me-2 ms-5 text-primary"></i>
-                            <span>reels</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-shop fs-4 me-2 ms-5 text-primary"></i>
-                    <span>marketplace</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-calendar-event fs-4 me-2 ms-5 text-primary"></i>
-                    <span>אירועים</span>
-                </a>
-
-                 <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-flag-fill fs-4 me-2 ms-5 text-primary"></i>
-                    <span>דפים</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-credit-card fs-4 me-2 ms-5 text-primary"></i>
-                    <span>הזמנות ותשלומים</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-gift fs-4 me-2 ms-5 text-primary"></i>
-                    <span>ימי הולדת</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-controller fs-4 me-2 ms-5 text-primary"></i>
-                    <span>gaming</span>
-                </a>
-
-                <a href="#" class="d-flex align-items-center text-decoration-none text-dark rounded hover-effect  p-2">
-                    <i class="bi bi-chat-left-dots fs-4 me-2 ms-5 text-primary"></i>
-                    <span>massanger</span>
-                </a>
-
-
-            </div>
-        </div>          
         <div class="col-lg-6">
 
     <div class="card mb-4">
         <div class="card-body">
 
-            <!-- תיבת יצירת פוסט -->
             <div class="d-flex align-items-center gap-2 mb-2">
 
                 <img
@@ -222,7 +49,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
                     פרסם
                 </button>
 
-                <!-- תמונה -->
                 <button
                     type="button"
                     class="btn btn-light"
@@ -232,7 +58,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
                     <i class="bi bi-file-earmark-image"></i>
                 </button>
 
-                <!-- סרטון -->
                 <button
                     type="button"
                     class="btn btn-light"
@@ -242,7 +67,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
                     <i class="bi bi-camera-video-fill"></i>
                 </button>
 
-                <!-- הרגשה -->
                 <button
                     type="button"
                     class="btn btn-light"
@@ -255,7 +79,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
             </div>
 
 
-            <!-- בחירת תמונה - מוסתר -->
             <input
                 type="file"
                 id="postImageInput"
@@ -263,7 +86,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
                 style="display: none;"
             >
 
-            <!-- בחירת סרטון - מוסתר -->
             <input
                 type="file"
                 id="postVideoInput"
@@ -272,14 +94,12 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
             >
 
 
-            <!-- שם הקובץ שנבחר -->
             <div
                 id="selectedPostFile"
                 class="text-muted small mb-2"
             ></div>
 
 
-            <!-- חלונית רגשות -->
             <div
                 id="feelingsMenu"
                 class="card shadow p-3 mt-2"
@@ -338,7 +158,6 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
 
         </div>
     </div>
-            <!-- פוסטים לדוגמה -->
              <div id="postsContainer"></div>
             <div class="card mb-4">
                 <div class="card-body">
@@ -359,13 +178,38 @@ class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-
                         <a href="#" class="btn btn-primary mb-5">לפרטים נוספים</a> 
                         <hr class="text-muted my-3">  
                     </div>
+<div class="card-body">
 
-                    <div class="card-body">
-                        <h6 class="card-title">ימי הולדת </h6>
-                        <p class="card-text">.פה אפשר לרשום את כל החברים שיש להם יום הולדת היום או בימים הקרובים</p>
-                        </div>
-        </div>
+    <h6 class="card-title">
+        <i class="bi bi-gift-fill text-primary"></i>
+        ימי הולדת
+    </h6>
+
+    <a
+        href="birthdays.html"
+        id="todayBirthdaysLink"
+        class="text-decoration-none text-dark"
+        style="display: none;"
+    >
+        <div id="todayBirthdaysContent"></div>
+    </a>
+
+    <div
+        id="noBirthdaysToday"
+        class="text-muted small"
+    >
+        אין ימי הולדת היום
+    </div>
+
+</div>
     </div>
 </div>
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script src="navigation.js"></script>
 <script src="Post.js"></script>
+
 </body>
+</html>

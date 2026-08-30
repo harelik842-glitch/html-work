@@ -19,7 +19,8 @@ const notificationSchema = new mongoose.Schema({
             'like',
             'comment',
             'friend',
-            'group_post'
+            'group_post',
+            'share'
         ],
         required: true
     },
