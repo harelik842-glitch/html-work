@@ -30,14 +30,12 @@ function setupVideoAutoplay() {
 
             if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
 
-                // עוצר את שאר הסרטונים
                 videos.forEach(otherVideo => {
                     if (otherVideo !== video) {
                         otherVideo.pause();
                     }
                 });
 
-                // מפעיל את הסרטון שנמצא במסך
                 video.play().catch(error => {
                     console.log('Autoplay blocked:', error);
                 });

@@ -1,13 +1,7 @@
-// =====================================================
-// SHARED NAVIGATION
-// =====================================================
 
 let navigationCurrentUser = null;
 
 
-// =====================================================
-// יצירת הסרגל העליון + הסרגל הימני
-// =====================================================
 
 function createSharedNavigation() {
 
@@ -20,15 +14,11 @@ function createSharedNavigation() {
 
     container.innerHTML = `
 
-        <!-- ==============================
-             סרגל עליון
-        =============================== -->
 
         <nav class="navbar bg-white border-bottom sticky-top shared-top-navbar">
 
             <div class="container-fluid">
 
-                <!-- צד ימין: לוגו + חיפוש -->
 
                 <div class="d-flex align-items-center gap-2">
 
@@ -59,7 +49,6 @@ function createSharedNavigation() {
                 </div>
 
 
-                <!-- 5 אייקונים באמצע -->
 
                 <div class="shared-center-navigation">
 
@@ -86,12 +75,10 @@ function createSharedNavigation() {
                 </div>
 
 
-                <!-- צד שמאל -->
 
                 <div class="d-flex align-items-center gap-2">
 
 
-                    <!-- הודעות -->
 
                     <a
                         href="messages.html"
@@ -112,7 +99,6 @@ function createSharedNavigation() {
                     </a>
 
 
-                    <!-- התראות -->
 
                     <div class="position-relative">
 
@@ -172,7 +158,6 @@ function createSharedNavigation() {
                     </div>
 
 
-                    <!-- תמונת משתמש -->
 
                     <div class="position-relative">
 
@@ -230,13 +215,9 @@ function createSharedNavigation() {
 
 
 
-        <!-- ==============================
-             סרגל צד ימין
-        =============================== -->
 
         <aside class="shared-right-sidebar">
 
-            <!-- משתמש -->
 
             <a
                 href="profile.html"
@@ -258,7 +239,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- חברים -->
 
             <a href="friends.html" class="shared-sidebar-link">
                 <i class="bi bi-people-fill"></i>
@@ -266,7 +246,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- זכרונות -->
 
             <a href="memories.html" class="shared-sidebar-link">
                 <i class="bi bi-clock-history"></i>
@@ -274,7 +253,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- שמורים -->
 
             <a href="saved.html" class="shared-sidebar-link">
                 <i class="bi bi-bookmark-fill"></i>
@@ -282,7 +260,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- קבוצות -->
 
             <a href="groups.html" class="shared-sidebar-link">
                 <i class="bi bi-people"></i>
@@ -290,7 +267,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- Reels -->
 
             <a href="#" class="shared-sidebar-link">
                 <i class="bi bi-play-btn-fill"></i>
@@ -298,7 +274,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- Marketplace -->
 
             <a href="marketplace.html" class="shared-sidebar-link">
                 <i class="bi bi-shop"></i>
@@ -306,7 +281,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- אירועים -->
 
             <a href="events.html" class="shared-sidebar-link">
                 <i class="bi bi-calendar-event-fill"></i>
@@ -314,7 +288,17 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- Messenger -->
+            <a href="statistics.html" class="shared-sidebar-link">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>סטטיסטיקות</span>
+            </a>
+
+            
+            <a href="map.html" class="shared-sidebar-link">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>מפת משתמשים</span>
+            </a>
+
 
             <a href="messages.html" class="shared-sidebar-link">
                 <i class="bi bi-messenger"></i>
@@ -322,7 +306,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- התראות -->
 
             <a href="notifications.html" class="shared-sidebar-link">
                 <i class="bi bi-bell-fill"></i>
@@ -330,7 +313,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- הזמנות ותשלומים -->
 
             <a href="#" class="shared-sidebar-link">
                 <i class="bi bi-credit-card-fill"></i>
@@ -338,7 +320,6 @@ function createSharedNavigation() {
             </a>
 
 
-            <!-- ימי הולדת -->
 
             <a href="birthdays.html" class="shared-sidebar-link">
                 <i class="bi bi-gift-fill"></i>
@@ -350,9 +331,6 @@ function createSharedNavigation() {
 }
 
 
-// =====================================================
-// טעינת המשתמש המחובר
-// =====================================================
 
 async function loadNavigationCurrentUser() {
 
@@ -410,9 +388,6 @@ async function loadNavigationCurrentUser() {
 }
 
 
-// =====================================================
-// חיפוש
-// =====================================================
 
 function initializeNavigationSearch() {
 
@@ -453,7 +428,7 @@ function initializeNavigationSearch() {
 
 
             try {
-
+// מחפש משתמשים וקבוצות באותו זמן
                 const [usersResponse, groupsResponse] =
                     await Promise.all([
 
@@ -654,9 +629,6 @@ function initializeNavigationSearch() {
 }
 
 
-// =====================================================
-// הודעות שלא נקראו
-// =====================================================
 
 async function loadNavigationUnreadMessages() {
 
@@ -845,7 +817,7 @@ async function loadNavigationNotifications() {
                 const senderName =
                     `${notification.sender?.firstName || ''} ${notification.sender?.lastName || ''}`.trim();
 
-
+// משנה את הטקסט לפי סוג ההתראה
                 let text =
                     'התראה חדשה';
 
@@ -957,7 +929,7 @@ if (acceptButton) {
                 this.dataset.userId;
 
             try {
-
+// מסמן את כל ההתראה כ"נקראו" שפותחים את תפריט ההתראות
                 const response =
                     await fetch(
                         `/api/users/${senderId}/friend-request/accept`,
@@ -1256,9 +1228,6 @@ function initializeNavigationProfileMenu() {
 }
 
 
-// =====================================================
-// התנתקות
-// =====================================================
 
 function initializeNavigationLogout() {
 
@@ -1321,9 +1290,6 @@ function initializeNavigationLogout() {
 }
 
 
-// =====================================================
-// הפעלת הניווט
-// =====================================================
 
 async function initializeSharedNavigation() {
 

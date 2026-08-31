@@ -7,19 +7,16 @@
 
     <title>Marketplace</title>
 
-    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- Bootstrap Icons -->
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
-    <!-- CSS של האתר -->
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -51,7 +48,6 @@
             </div>
 
 
-            <!-- יצירת מודעה -->
 
             <button
                 type="button"
@@ -69,9 +65,6 @@
 
 
 
-    <!-- =================================================
-         כל המודעות
-    ================================================== -->
 
     <div
         id="marketplaceItemsContainer"
@@ -89,9 +82,6 @@
 
 
 
-<!-- =====================================================
-     חלונית יצירת מודעה חדשה
-===================================================== -->
 
 <div
     class="modal fade"
@@ -106,7 +96,6 @@
         <div class="modal-content">
 
 
-            <!-- כותרת החלונית -->
 
             <div class="modal-header">
 
@@ -128,7 +117,6 @@
 
 
 
-            <!-- תוכן החלונית -->
 
             <div class="modal-body">
 
@@ -136,7 +124,6 @@
                 <form id="createMarketplaceItemForm">
 
 
-                    <!-- שם מוצר -->
 
                     <div class="mb-3">
 
@@ -158,7 +145,6 @@
 
 
 
-                    <!-- מחיר -->
 
                     <div class="mb-3">
 
@@ -191,7 +177,6 @@
 
 
 
-                    <!-- מיקום -->
 
                     <div class="mb-3">
 
@@ -213,7 +198,6 @@
 
 
 
-                    <!-- תיאור -->
 
                     <div class="mb-3">
 
@@ -235,7 +219,6 @@
 
 
 
-                    <!-- תמונה -->
 
                     <div class="mb-3">
 
@@ -257,7 +240,6 @@
 
 
 
-                    <!-- Preview -->
 
                     <div
                         id="marketplaceImagePreviewContainer"
@@ -276,7 +258,6 @@
 
 
 
-                    <!-- כפתור פרסום -->
 
                     <button
                         type="submit"
@@ -300,9 +281,6 @@
 
 
 
-<!-- =====================================================
-     חלונית צפייה במודעה
-===================================================== -->
 
 <div
     class="modal fade"
@@ -319,7 +297,6 @@
         <div class="modal-content">
 
 
-            <!-- כותרת -->
 
             <div class="modal-header">
 
@@ -341,14 +318,12 @@
 
 
 
-            <!-- תוכן -->
 
             <div class="modal-body">
 
                 <div class="row g-4">
 
 
-                    <!-- תמונה -->
 
                     <div class="col-md-7">
 
@@ -363,12 +338,10 @@
 
 
 
-                    <!-- פרטים -->
 
                     <div class="col-md-5">
 
 
-                        <!-- מחיר -->
 
                         <h3
                             id="modalItemPrice"
@@ -376,7 +349,6 @@
                         ></h3>
 
 
-                        <!-- שם -->
 
                         <h5
                             id="modalItemTitle"
@@ -384,7 +356,6 @@
                         ></h5>
 
 
-                        <!-- מיקום -->
 
                         <div
                             id="modalItemLocation"
@@ -395,7 +366,6 @@
                         <hr>
 
 
-                        <!-- תיאור -->
 
                         <h6>
                             תיאור
@@ -410,7 +380,6 @@
                         <hr>
 
 
-                        <!-- מוכר -->
 
                         <div
                             class="d-flex align-items-center gap-2 mb-3"
@@ -441,7 +410,6 @@
 
 
 
-                        <!-- הודעה למוכר -->
 
                         <button
                             type="button"
@@ -467,11 +435,7 @@
 
 
 
-<!-- =====================================================
-     JavaScript
-===================================================== -->
 
-<!-- Bootstrap JS חייב להיות לפני marketplace.js -->
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>

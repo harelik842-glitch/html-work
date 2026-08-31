@@ -109,6 +109,8 @@ function renderGroupMembers() {
     const adminId = currentGroup.creator?._id || currentGroup.creator;
     const members = [...(currentGroup.members || [])];
 
+
+    //שם את מנהל הקבוצה ראשון בתצוגה
     members.sort((a, b) => {
         const aIsAdmin = a._id?.toString() === adminId?.toString();
         const bIsAdmin = b._id?.toString() === adminId?.toString();
@@ -175,7 +177,7 @@ function updateGroupPermissions() {
     if (!currentUser || !currentGroup) {
         return;
     }
-
+// בודק אם המשתמש חבר בקבוצה ואם הוא המנהל
     const isMember = currentGroup.members?.some(member =>
         member._id?.toString() === currentUser._id?.toString()
     );
@@ -205,21 +207,18 @@ function updateGroupPermissions() {
         document.getElementById('deleteGroupBtn');
 
 
-    // יצירת פוסט - רק חברי הקבוצה
     if (postBox) {
         postBox.style.display =
             isMember ? 'block' : 'none';
     }
 
 
-    // הצטרפות - רק מי שלא חבר
     if (joinButton) {
         joinButton.style.display =
             isMember ? 'none' : 'inline-block';
     }
 
 
-    // עזיבת קבוצה - חבר שאינו היוצר
     if (leaveButton) {
         leaveButton.style.display =
             isMember && !isCreator
@@ -228,7 +227,6 @@ function updateGroupPermissions() {
     }
 
 
-    // עריכת קבוצה - רק היוצר
     if (editGroupBtn) {
         editGroupBtn.style.display =
             isCreator
@@ -237,7 +235,6 @@ function updateGroupPermissions() {
     }
 
 
-    // מחיקת קבוצה - רק היוצר
     if (deleteGroupBtn) {
         deleteGroupBtn.style.display =
             isCreator
@@ -259,7 +256,7 @@ document.getElementById('publishGroupPostBtn').addEventListener('click', async f
         alert('יש לכתוב פוסט, לבחור תמונה או לבחור סרטון');
         return;
     }
-
+//שולח את הפוסט ביחד עם תמונה או סרטון תלוי מה נבחר
     const formData = new FormData();
 
     formData.append('text', text);
@@ -408,7 +405,7 @@ document.querySelectorAll('.group-feeling-option').forEach(button => {
     });
 });
 
-
+//נופך את זמן הפרסום ל-"לפני איקס דקות"
 function timeAgo(date) {
     const now = new Date();
     const created = new Date(date);
@@ -628,7 +625,6 @@ function setupGroupPostActions(postElement, post) {
         postElement.querySelector('.like-group-post-btn');
 
     if (likeButton) {
-        console.log('setupGroupPostActions running for post:', post._id);
         likeButton.addEventListener('click', async function () {
             try {
                 const response = await fetch(
@@ -682,7 +678,6 @@ const commentInput =
 
 const addCommentButton =
     postElement.querySelector('.add-group-comment-btn');
-    console.log('addCommentButton:', addCommentButton);
 
 async function loadGroupComments() {
     try {
@@ -747,7 +742,6 @@ if (commentButton) {
 if (addCommentButton) {
     addCommentButton.addEventListener('click', async function () {
         
-        console.log('ADD COMMENT BUTTON CLICKED');
         const text = commentInput.value.trim();
 
         if (text === '') {
@@ -829,8 +823,6 @@ if (deleteButton) {
             );
 
             const data = await response.json();
-            console.log('COMMENT RESPONSE:', data);
-console.log('STATUS:', response.status);
 
             if (response.ok) {
                 postElement.remove();
@@ -1056,7 +1048,7 @@ if (deleteGroupBtn) {
         }
     );
 }
-
+//אם הגענו למקום מלחיצה על התראה זה עובר לפוסט המתאים
 function scrollToGroupNotificationPost() {
     const params = new URLSearchParams(window.location.search);
     const postId = params.get('postId');

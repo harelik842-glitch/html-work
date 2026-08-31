@@ -1,9 +1,6 @@
 let selectedMarketplaceItem = null;
 
 
-// =====================================================
-// אלמנטים - יצירת מודעה
-// =====================================================
 
 const createMarketplaceItemForm =
     document.getElementById('createMarketplaceItemForm');
@@ -20,9 +17,6 @@ const marketplaceImagePreviewContainer =
     );
 
 
-// =====================================================
-// Preview לתמונת מוצר
-// =====================================================
 
 if (marketplaceItemImage) {
 
@@ -55,9 +49,6 @@ if (marketplaceItemImage) {
 }
 
 
-// =====================================================
-// יצירת מודעה חדשה
-// =====================================================
 
 if (createMarketplaceItemForm) {
 
@@ -107,7 +98,6 @@ if (createMarketplaceItemForm) {
                 marketplaceItemImage?.files[0];
 
 
-            // בדיקות
 
             if (name === '') {
                 alert('יש להזין שם מוצר');
@@ -127,7 +117,6 @@ if (createMarketplaceItemForm) {
             }
 
 
-            // יצירת FormData
 
             const formData =
                 new FormData();
@@ -194,12 +183,10 @@ if (createMarketplaceItemForm) {
                 }
 
 
-                // ניקוי הטופס
 
                 createMarketplaceItemForm.reset();
 
 
-                // ניקוי Preview
 
                 marketplaceImagePreview.src = '';
 
@@ -207,7 +194,6 @@ if (createMarketplaceItemForm) {
                     true;
 
 
-                // סגירת חלונית יצירת המודעה
 
                 const modalElement =
                     document.getElementById(
@@ -226,8 +212,6 @@ if (createMarketplaceItemForm) {
                 }
 
 
-                // טעינת המודעות מחדש
-                // כדי שהמודעה החדשה תופיע מיד
 
                 await loadMarketplaceItems();
 
@@ -252,9 +236,6 @@ if (createMarketplaceItemForm) {
 }
 
 
-// =====================================================
-// טעינת כל המודעות
-// =====================================================
 
 async function loadMarketplaceItems() {
 
@@ -292,7 +273,6 @@ async function loadMarketplaceItems() {
         container.innerHTML = '';
 
 
-        // אין מודעות
 
         if (items.length === 0) {
 
@@ -306,7 +286,6 @@ async function loadMarketplaceItems() {
         }
 
 
-        // יצירת כרטיס לכל מודעה
 
         items.forEach(item => {
 
@@ -362,7 +341,6 @@ async function loadMarketplaceItems() {
             `;
 
 
-            // לחיצה על מודעה
 
             itemElement.addEventListener(
                 'click',
@@ -395,9 +373,6 @@ async function loadMarketplaceItems() {
 }
 
 
-// =====================================================
-// פתיחת חלונית פרטי מוצר
-// =====================================================
 
 function openMarketplaceItem(item) {
 
@@ -405,7 +380,6 @@ function openMarketplaceItem(item) {
         item;
 
 
-    // שם בכותרת החלונית
 
     document.getElementById(
         'modalItemName'
@@ -414,7 +388,6 @@ function openMarketplaceItem(item) {
         'פרטי המוצר';
 
 
-    // שם המוצר
 
     document.getElementById(
         'modalItemTitle'
@@ -422,7 +395,6 @@ function openMarketplaceItem(item) {
         item.name || '';
 
 
-    // מחיר
 
     document.getElementById(
         'modalItemPrice'
@@ -432,7 +404,6 @@ function openMarketplaceItem(item) {
         ).toLocaleString('he-IL')}`;
 
 
-    // מיקום
 
     document.getElementById(
         'modalItemLocation'
@@ -447,7 +418,6 @@ function openMarketplaceItem(item) {
     `;
 
 
-    // תיאור
 
     document.getElementById(
         'modalItemDescription'
@@ -456,7 +426,6 @@ function openMarketplaceItem(item) {
         'לא נוסף תיאור למוצר';
 
 
-    // תמונת מוצר
 
     document.getElementById(
         'modalItemImage'
@@ -465,7 +434,6 @@ function openMarketplaceItem(item) {
         'harel.jpg';
 
 
-    // תמונת המוכר
 
     document.getElementById(
         'modalSellerImage'
@@ -474,7 +442,6 @@ function openMarketplaceItem(item) {
         'harel.jpg';
 
 
-    // שם המוכר
 
     const sellerName =
         `${
@@ -492,7 +459,6 @@ function openMarketplaceItem(item) {
         'משתמש';
 
 
-    // פתיחת החלונית
 
     const modalElement =
         document.getElementById(
@@ -511,9 +477,6 @@ function openMarketplaceItem(item) {
 }
 
 
-// =====================================================
-// שליחת הודעה למוכר
-// =====================================================
 
 const messageSellerBtn =
     document.getElementById(
@@ -543,8 +506,6 @@ if (messageSellerBtn) {
             }
 
 
-            // מעבר לעמוד ההודעות
-            // עם ID של מוכר המוצר
 
             window.location.href =
                 `messages.html?userId=${sellerId}`;
@@ -555,8 +516,5 @@ if (messageSellerBtn) {
 }
 
 
-// =====================================================
-// טעינת Marketplace בכניסה לעמוד
-// =====================================================
 
 loadMarketplaceItems();

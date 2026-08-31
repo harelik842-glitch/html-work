@@ -1,9 +1,6 @@
 let currentUser = null;
 
 
-// ==========================================
-// טעינת המשתמש המחובר
-// ==========================================
 
 async function loadCurrentUser() {
     try {
@@ -32,9 +29,6 @@ async function loadCurrentUser() {
 }
 
 
-// ==========================================
-// מעבר בין טאבים
-// ==========================================
 
 function initializeTabs() {
 
@@ -112,9 +106,6 @@ function initializeTabs() {
 }
 
 
-// ==========================================
-// טעינת בקשות חברות
-// ==========================================
 
 async function loadFriendRequests() {
 
@@ -137,7 +128,6 @@ async function loadFriendRequests() {
         currentUser.friendRequestsReceived || [];
 
 
-    // מספר הבקשות
 
     countBadge.textContent =
         requestIds.length;
@@ -184,7 +174,7 @@ async function loadFriendRequests() {
         const users =
             await response.json();
 
-
+//מצא את המשתמשים ששלחו בקשות חברות
         const requestUsers =
             users.filter(user =>
                 requestIds.some(requestId =>
@@ -293,14 +283,10 @@ async function loadFriendRequests() {
 }
 
 
-// ==========================================
-// כפתורי אשר / דחה
-// ==========================================
 
 function initializeRequestButtons() {
 
 
-    // אישור
 
     const acceptButtons =
         document.querySelectorAll(
@@ -362,7 +348,6 @@ function initializeRequestButtons() {
     });
 
 
-    // דחייה
 
     const rejectButtons =
         document.querySelectorAll(
@@ -425,9 +410,6 @@ function initializeRequestButtons() {
 }
 
 
-// ==========================================
-// טעינת כל החברים
-// ==========================================
 
 async function loadFriends() {
 
@@ -477,7 +459,7 @@ async function loadFriends() {
         const users =
             await response.json();
 
-
+//מצא את הפרטים של המשתמשים שנמצאים ברשימת החברים
         const friends =
             users.filter(user =>
                 friendIds.some(friendId =>
@@ -572,9 +554,6 @@ async function loadFriends() {
 }
 
 
-// ==========================================
-// הסרת חבר
-// ==========================================
 
 function initializeRemoveFriendButtons() {
 
@@ -640,9 +619,6 @@ function initializeRemoveFriendButtons() {
 }
 
 
-// ==========================================
-// רענון הנתונים
-// ==========================================
 
 async function refreshFriendsPage() {
 
@@ -654,9 +630,6 @@ async function refreshFriendsPage() {
 }
 
 
-// ==========================================
-// הפעלת העמוד
-// ==========================================
 
 async function initializeFriendsPage() {
 

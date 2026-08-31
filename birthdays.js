@@ -4,7 +4,6 @@ let currentUser = null;
 async function loadBirthdays() {
     try {
 
-        // המשתמש המחובר
         const currentUserResponse =
             await fetch('/api/current-user');
 
@@ -16,7 +15,6 @@ async function loadBirthdays() {
             await currentUserResponse.json();
 
 
-        // כל המשתמשים
         const usersResponse =
             await fetch('/api/users');
 
@@ -28,7 +26,6 @@ async function loadBirthdays() {
             await usersResponse.json();
 
 
-        // משאירים רק חברים שיש להם יום הולדת
         const friendsWithBirthdays = users.filter(user => {
 
             const isFriend =
@@ -83,7 +80,7 @@ async function loadBirthdays() {
         const todayDay = today.getDate();
 
 
-        // מחשבים לכל חבר כמה זמן נשאר עד יום ההולדת הבא
+        // מחשב מתי יום ההולדת הבא של כל חבר
         friendsWithBirthdays.forEach(friend => {
 
             const birthday =
@@ -96,7 +93,6 @@ async function loadBirthdays() {
                     birthday.getDate()
                 );
 
-            // מאפסים שעות כדי שהחישוב יהיה לפי ימים בלבד
             const todayOnly =
                 new Date(
                     today.getFullYear(),
@@ -128,7 +124,7 @@ async function loadBirthdays() {
         });
 
 
-        // מיון לפי יום ההולדת הקרוב
+        // מציג קודם את ימי ההולדת הקרובים
         friendsWithBirthdays.sort(
             (a, b) =>
                 a.daysUntilBirthday -
@@ -136,7 +132,7 @@ async function loadBirthdays() {
         );
 
 
-        // קיבוץ לפי יום וחודש
+        // מאחד חברים שחוגגים באותו יום
         const birthdayGroups = {};
 
         friendsWithBirthdays.forEach(friend => {
@@ -158,7 +154,6 @@ async function loadBirthdays() {
         });
 
 
-        // הצגת הקבוצות
         Object.values(birthdayGroups).forEach(group => {
 
             const date = group.date;

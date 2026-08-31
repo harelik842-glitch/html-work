@@ -168,16 +168,47 @@
             </div>
         </div>
         <div class="col-lg-3 d-none d-lg-block">
-            <div class="d-flex flex-column gap-3" style="position: sticky; top: 70px;">
-                <h5h>ממומן</h5>
-            </div>
+<div class="card shadow-sm border-0 rounded-4 mb-4">
 
-                    <div class="card-body">
-                        <h6 class="card-title">מודעה לדוגמה</h6>
-                        <p class="card-text">.פה אפשר לרשום את תוכן המודעה הממומנת או את הפרסומת</p>
-                        <a href="#" class="btn btn-primary mb-5">לפרטים נוספים</a> 
-                        <hr class="text-muted my-3">  
-                    </div>
+    <div class="card-body">
+
+        <h5 class="mb-3">
+            <i class="bi bi-cloud-sun-fill text-primary"></i>
+            מזג האוויר
+        </h5>
+
+        <div class="input-group mb-3">
+
+            <input
+                type="text"
+                id="weatherCityInput"
+                class="form-control"
+                placeholder="הכנס עיר..."
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="weatherSearchBtn"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-search"></i>
+            </button>
+
+        </div>
+
+        <div
+            id="weatherResult"
+            class="text-center"
+        >
+            <div class="text-muted small">
+                חפש עיר כדי לראות את מזג האוויר
+            </div>
+        </div>
+
+    </div>
+
+</div>
 <div class="card-body">
 
     <h6 class="card-title">

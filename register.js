@@ -37,13 +37,46 @@ document
                 document.getElementById('birthday').value
         };
 
-        // שמירה זמנית עד שלב 2
         sessionStorage.setItem(
             'registrationData',
             JSON.stringify(userData)
         );
 
-        // מעבר לשלב בחירת התמונות
         window.location.href =
             'register-step2.html';
     });
+
+
+    function initCityAutocomplete() {
+
+    const cityInput =
+        document.getElementById('city');
+
+    if (!cityInput) {
+        return;
+    }
+
+    const autocomplete =
+        new google.maps.places.Autocomplete(
+            cityInput,
+            {
+                types: ['(cities)']
+            }
+        );
+
+    autocomplete.addListener(
+        'place_changed',
+        function () {
+
+            const place =
+                autocomplete.getPlace();
+
+            if (!place) {
+                return;
+            }
+
+            cityInput.value =
+                place.name || cityInput.value;
+        }
+    );
+}

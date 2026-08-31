@@ -531,9 +531,6 @@ ${
                 postElement.querySelector(
                     '.comment-count'
                 );
-// ==========================================
-// עריכת פוסט
-// ==========================================
 
 const editButton =
     postElement.querySelector(
@@ -562,7 +559,6 @@ if (editButton) {
                 textElement.textContent.trim();
 
 
-            // מחליפים את הטקסט באזור עריכה
             textElement.outerHTML = `
 
                 <div
@@ -620,9 +616,6 @@ if (editButton) {
             textarea.focus();
 
 
-            // ==============================
-            // שמירת העריכה
-            // ==============================
 
             saveButton.addEventListener(
                 'click',
@@ -693,9 +686,6 @@ if (editButton) {
             );
 
 
-            // ==============================
-            // ביטול העריכה
-            // ==============================
 
             cancelButton.addEventListener(
                 'click',
@@ -1644,6 +1634,188 @@ async function loadTodayBirthdays() {
     }
 }
 
+
+async function loadWeather(city) {
+
+    const weatherResult =
+        document.getElementById('weatherResult');
+
+    if (!weatherResult) {
+        return;
+    }
+
+    weatherResult.innerHTML = `
+        <div class="text-muted">
+            טוען מזג אוויר...
+        </div>
+    `;
+
+    try {
+
+        // חיפוש העיר וקבלת קווי אורך ורוחב
+        const geoResponse = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=he&format=json`
+        );
+
+        if (!geoResponse.ok) {
+            throw new Error('Geocoding service error');
+        }
+
+        const geoData =
+            await geoResponse.json();
+
+        if (
+            !geoData.results ||
+            geoData.results.length === 0
+        ) {
+            weatherResult.innerHTML = `
+                <div class="text-danger">
+                    העיר לא נמצאה
+                </div>
+            `;
+
+            return;
+        }
+
+        const location =
+            geoData.results[0];
+
+        const latitude =
+            location.latitude;
+
+        const longitude =
+            location.longitude;
+
+
+        // קבלת מזג האוויר לפי המיקום
+        const weatherResponse = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m&timezone=auto`
+        );
+
+        if (!weatherResponse.ok) {
+            throw new Error('Weather service error');
+        }
+
+        const weatherData =
+            await weatherResponse.json();
+
+        const current =
+            weatherData.current;
+
+
+        weatherResult.innerHTML = `
+
+            <div class="mb-2">
+                <i
+                    class="bi bi-cloud-sun-fill text-primary"
+                    style="font-size: 2.5rem;"
+                ></i>
+            </div>
+
+            <h5 class="mb-1">
+                ${location.name}
+            </h5>
+
+            <div class="text-muted small mb-3">
+                ${location.country || ''}
+            </div>
+
+            <div
+                class="fw-bold mb-3"
+                style="font-size: 2rem;"
+            >
+                ${Math.round(current.temperature_2m)}°C
+            </div>
+
+            <div class="small mb-1">
+                מרגיש כמו:
+                <strong>
+                    ${Math.round(current.apparent_temperature)}°C
+                </strong>
+            </div>
+
+            <div class="small mb-1">
+                לחות:
+                <strong>
+                    ${current.relative_humidity_2m}%
+                </strong>
+            </div>
+
+            <div class="small">
+                מהירות רוח:
+                <strong>
+                    ${current.wind_speed_10m} קמ״ש
+                </strong>
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(
+            'Weather Web Service error:',
+            error
+        );
+
+        weatherResult.innerHTML = `
+            <div class="text-danger">
+                לא ניתן לקבל כרגע נתוני מזג אוויר
+            </div>
+        `;
+    }
+}
+
+
+
+const weatherSearchBtn =
+    document.getElementById('weatherSearchBtn');
+
+const weatherCityInput =
+    document.getElementById('weatherCityInput');
+
+
+if (
+    weatherSearchBtn &&
+    weatherCityInput
+) {
+
+    weatherSearchBtn.addEventListener(
+        'click',
+        function () {
+
+            const city =
+                weatherCityInput.value.trim();
+
+            if (!city) {
+                alert('יש להזין שם עיר');
+                return;
+            }
+
+            loadWeather(city);
+        }
+    );
+
+
+    // מאפשר גם לחיצה כל מקש אנטר
+    weatherCityInput.addEventListener(
+        'keydown',
+        function (event) {
+
+            if (event.key === 'Enter') {
+
+                event.preventDefault();
+
+                const city =
+                    weatherCityInput.value.trim();
+
+                if (!city) {
+                    return;
+                }
+
+                loadWeather(city);
+            }
+        }
+    );
+}
 
 async function initializeHomePage() {
 

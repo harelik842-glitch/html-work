@@ -1,16 +1,22 @@
-const MarketplaceItem = require('../models/MarketplaceItem');
+const MarketplaceItem =
+    require('../models/MarketplaceItem');
 
 
-// יצירת מודעה חדשה
 const createItem = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
+
 
         const {
             name,
@@ -19,70 +25,127 @@ const createItem = async (req, res) => {
             location
         } = req.body;
 
-        if (!name || !price) {
+
+        if (
+            !name ||
+            name.trim() === '' ||
+            price === undefined ||
+            price === ''
+        ) {
+
             return res.status(400).json({
-                message: 'Name and price are required'
+                message:
+                    'Name and price are required'
             });
         }
 
-        let image = '';
 
-        if (req.file) {
-            image = `/uploads/${req.file.filename}`;
+        const numericPrice =
+            Number(price);
+
+
+        if (
+            !Number.isFinite(numericPrice) ||
+            numericPrice < 0
+        ) {
+
+            return res.status(400).json({
+                message:
+                    'Price must be a valid number'
+            });
         }
 
-        const newItem = new MarketplaceItem({
-            seller: userId,
-            name: name.trim(),
-            description: description
-                ? description.trim()
-                : '',
-            price: Number(price),
-            location: location
-                ? location.trim()
-                : '',
-            image: image
-        });
+
+        let image = '';
+
+
+        if (req.file) {
+
+            image =
+                `/uploads/${req.file.filename}`;
+        }
+
+
+        const newItem =
+            new MarketplaceItem({
+                seller:
+                    userId,
+
+                name:
+                    name.trim(),
+
+                description:
+                    description
+                        ? description.trim()
+                        : '',
+
+                price:
+                    numericPrice,
+
+                location:
+                    location
+                        ? location.trim()
+                        : '',
+
+                image:
+                    image
+            });
+
 
         const savedItem =
             await newItem.save();
 
+
         const populatedItem =
-            await MarketplaceItem.findById(savedItem._id)
+            await MarketplaceItem.findById(
+                savedItem._id
+            )
                 .populate(
                     'seller',
                     'username firstName lastName profileImage'
                 );
 
+
         res.status(201).json({
-            message: 'Marketplace item created successfully',
-            item: populatedItem
+            message:
+                'Marketplace item created successfully',
+            item:
+                populatedItem
         });
 
+
     } catch (error) {
+
         console.error(
-            'Error creating marketplace item:',
+            'CREATE MARKETPLACE ITEM ERROR:',
             error
         );
 
+
         res.status(500).json({
-            message: 'Error creating marketplace item',
+            message:
+                'Error creating marketplace item',
             error: error.message
         });
     }
 };
 
 
-// קבלת כל המודעות
 const getItems = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
+
 
         const items =
             await MarketplaceItem.find({})
@@ -95,16 +158,23 @@ const getItems = async (req, res) => {
                 })
                 .lean();
 
-        res.status(200).json(items);
+
+        res.status(200).json(
+            items
+        );
+
 
     } catch (error) {
+
         console.error(
-            'Error getting marketplace items:',
+            'GET MARKETPLACE ITEMS ERROR:',
             error
         );
 
+
         res.status(500).json({
-            message: 'Error getting marketplace items',
+            message:
+                'Error getting marketplace items',
             error: error.message
         });
     }

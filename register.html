@@ -38,9 +38,20 @@
                     <input type="email" id="email" class="form-control" required>
                 </div>
 
-                <div class="mb-3">
-                    <label for="city" class="form-label">עיר</label>
-                    <input type="text" id="city" class="form-control">
+               <div class="mb-3">
+               <label for="city" class="form-label">עיר</label>
+
+                <input
+                type="text"
+                id="city"
+                class="form-control"
+                 placeholder="התחל להקליד עיר..."
+                autocomplete="off"
+    >
+
+                <div class="form-text">
+                 יש לבחור עיר מתוך הרשימה
+                </div>
                 </div>
 
                 <div class="mb-3">
@@ -68,5 +79,8 @@
         </div>
     </div>
 <script src="register.js"></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgUq-RRtTa7u-JTt3JjJSuUyZZZw3ymf0&libraries=places&callback=initCityAutocomplete"async  defer>
+</script>
 </body>
 </html>

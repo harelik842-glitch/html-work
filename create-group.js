@@ -4,7 +4,10 @@ const groupImageInput =
 const groupImagePreview =
     document.getElementById('groupImagePreview');
 
+
+// מציג את התמונה לפני יצירת הקבוצה
 groupImageInput.addEventListener('change', function () {
+
     const file = this.files[0];
 
     if (!file) {
@@ -24,55 +27,69 @@ groupImageInput.addEventListener('change', function () {
 });
 
 
-document.getElementById('createGroupForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
+document
+    .getElementById('createGroupForm')
+    .addEventListener('submit', async function (event) {
 
-    const name =
-        document.getElementById('groupName').value.trim();
+        event.preventDefault();
 
-    const description =
-        document.getElementById('groupDescription').value.trim();
+        const name =
+            document.getElementById('groupName').value.trim();
 
-    const imageFile =
-        document.getElementById('groupImage').files[0];
+        const description =
+            document.getElementById('groupDescription').value.trim();
 
-    if (name === '') {
-        alert('יש להזין שם לקבוצה');
-        return;
-    }
+        const imageFile =
+            document.getElementById('groupImage').files[0];
 
-    const formData = new FormData();
 
-    formData.append('name', name);
-    formData.append('description', description);
-
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-
-    try {
-        const response = await fetch('/api/groups-with-image', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert('הקבוצה נוצרה בהצלחה');
-
-            window.location.href =
-                `group.html?groupId=${data.group._id}`;
-
-        } else {
-            alert(
-                data.message ||
-                'אירעה שגיאה ביצירת הקבוצה'
-            );
+        if (name === '') {
+            alert('יש להזין שם לקבוצה');
+            return;
         }
 
-    } catch (error) {
-        console.error(error);
-        alert('לא ניתן להתחבר לשרת');
-    }
-});
+
+        // שולח את פרטי הקבוצה יחד עם התמונה
+        const formData = new FormData();
+
+        formData.append('name', name);
+        formData.append('description', description);
+
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+
+
+        try {
+
+            const response =
+                await fetch('/api/groups-with-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+            const data =
+                await response.json();
+
+
+            if (response.ok) {
+
+                alert('הקבוצה נוצרה בהצלחה');
+
+                window.location.href =
+                    `group.html?groupId=${data.group._id}`;
+
+            } else {
+
+                alert(
+                    data.message ||
+                    'אירעה שגיאה ביצירת הקבוצה'
+                );
+            }
+
+        } catch (error) {
+
+            console.error(error);
+            alert('לא ניתן להתחבר לשרת');
+        }
+    });

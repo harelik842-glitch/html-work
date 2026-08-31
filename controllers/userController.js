@@ -1,57 +1,78 @@
-const mongoose = require('mongoose');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 
+
 const createUser = async (req, res) => {
     try {
+
         let profileImage = '';
         let coverImage = '';
 
-        // תמונת פרופיל
+
         if (
-            req.files &&
-            req.files.profileImage &&
+            req.files?.profileImage &&
             req.files.profileImage[0]
         ) {
             profileImage =
                 `/uploads/${req.files.profileImage[0].filename}`;
         }
 
-        // תמונת נושא
+
         if (
-            req.files &&
-            req.files.coverImage &&
+            req.files?.coverImage &&
             req.files.coverImage[0]
         ) {
             coverImage =
                 `/uploads/${req.files.coverImage[0].filename}`;
         }
 
-        const newUser = new User({
-            username: req.body.username,
-            password: req.body.password,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            city: req.body.city,
-            birthday: req.body.birthday,
 
-            profileImage: profileImage,
-            coverImage: coverImage
-        });
+        const newUser =
+            new User({
+                username: req.body.username,
+                password: req.body.password,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                city: req.body.city,
+                birthday: req.body.birthday,
+                profileImage: profileImage,
+                coverImage: coverImage
+            });
 
-        const savedUser = await newUser.save();
+
+        const savedUser =
+            await newUser.save();
+
+
+        const userResponse =
+            savedUser.toObject();
+
+        delete userResponse.password;
+
 
         res.status(201).json({
             message: 'User created successfully',
-            user: savedUser
+            user: userResponse
         });
 
+
     } catch (error) {
+
         console.error(
             'Error creating user:',
             error
         );
+
+
+        if (error.code === 11000) {
+
+            return res.status(400).json({
+                message:
+                    'שם המשתמש או האימייל כבר קיימים במערכת'
+            });
+        }
+
 
         res.status(500).json({
             message: 'Error creating user',
@@ -60,31 +81,59 @@ const createUser = async (req, res) => {
     }
 };
 
+
 const loginUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
 
-        const user = await User.findOne({ username: username });
+        const {
+            username,
+            password
+        } = req.body;
 
-        if (!user) {
+
+        const user =
+            await User.findOne({
+                username: username
+            });
+
+
+        if (
+            !user ||
+            user.password !== password
+        ) {
             return res.status(401).json({
-                message: 'שם משתמש או סיסמה שגויים'
+                message:
+                    'שם משתמש או סיסמה שגויים'
             });
         }
 
-        if (user.password !== password) {
-            return res.status(401).json({
-                message: 'שם משתמש או סיסמה שגויים'
-            });
-        }
-        req.session.userId = user._id;
-        req.session.username = user.username;
+
+        req.session.userId =
+            user._id;
+
+        req.session.username =
+            user.username;
+
+
+        const userResponse =
+            user.toObject();
+
+        delete userResponse.password;
+
+
         res.status(200).json({
             message: 'Login successful',
-            user: user
+            user: userResponse
         });
 
+
     } catch (error) {
+
+        console.error(
+            'Error logging in:',
+            error
+        );
+
         res.status(500).json({
             message: 'Error logging in',
             error: error.message
@@ -94,253 +143,390 @@ const loginUser = async (req, res) => {
 
 
 const getCurrentUser = async (req, res) => {
-    console.log('GET CURRENT USER CALLED');
-    console.log('MongoDB state:', mongoose.connection.readyState);
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
-        const startTime = Date.now();
 
-const user = await User.findById(userId)
-    .select('username firstName lastName email city birthday friends  profileImage coverImage savedPosts friendRequestsSent friendRequestsReceived') 
-    .lean();
 
-console.log(
-    'CURRENT USER QUERY TIME:',
-    Date.now() - startTime,
-    'ms'
-);
+        const user =
+            await User.findById(userId)
+                .select(
+                    'username firstName lastName email city birthday friends profileImage coverImage savedPosts friendRequestsSent friendRequestsReceived'
+                )
+                .lean();
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
+
 
         res.status(200).json(user);
 
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error getting current user',
-            error: error.message
-        });
-    }
-};
-
-const acceptFriendRequest = async (req, res) => {
-    try {
-        const userId = req.session.userId;
-        const senderId = req.params.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                message: 'User is not logged in'
-            });
-        }
-
-        const user = await User.findById(userId);
-        const sender = await User.findById(senderId);
-console.log('USER ID:', userId);
-console.log('SENDER ID:', senderId);
-console.log('RECEIVED REQUESTS:', user?.friendRequestsReceived);
-console.log('SENDER SENT REQUESTS:', sender?.friendRequestsSent);
-        if (!user || !sender) {
-            return res.status(404).json({
-                message: 'User not found'
-            });
-        }
-
-        const requestExists =
-            user.friendRequestsReceived?.some(
-                id =>
-                    id.toString() ===
-                    senderId.toString()
-            );
-
-        if (!requestExists) {
-            return res.status(400).json({
-                message: 'Friend request not found'
-            });
-        }
-
-        const userAlreadyFriend =
-            user.friends.some(
-                id =>
-                    id.toString() ===
-                    senderId.toString()
-            );
-
-        const senderAlreadyFriend =
-            sender.friends.some(
-                id =>
-                    id.toString() ===
-                    userId.toString()
-            );
-
-        if (!userAlreadyFriend) {
-            user.friends.push(senderId);
-        }
-
-        if (!senderAlreadyFriend) {
-            sender.friends.push(userId);
-        }
-
-        user.friendRequestsReceived =
-            user.friendRequestsReceived.filter(
-                id =>
-                    id.toString() !==
-                    senderId.toString()
-            );
-
-        sender.friendRequestsSent =
-            sender.friendRequestsSent.filter(
-                id =>
-                    id.toString() !==
-                    userId.toString()
-            );
-
-        await user.save();
-        await sender.save();
-
-        await Notification.deleteMany({
-            recipient: userId,
-            sender: senderId,
-            type: 'friend'
-        });
-
-        res.status(200).json({
-            message: 'Friend request accepted successfully'
-        });
 
     } catch (error) {
 
         console.error(
-            'ACCEPT FRIEND REQUEST ERROR:',
+            'Error getting current user:',
             error
         );
 
         res.status(500).json({
-            message: 'Error accepting friend request',
+            message:
+                'Error getting current user',
             error: error.message
         });
     }
 };
 
 
-const rejectFriendRequest = async (req, res) => {
-    try {
-        const userId = req.session.userId;
-        const senderId = req.params.id;
+const acceptFriendRequest =
+    async (req, res) => {
 
-        if (!userId) {
-            return res.status(401).json({
-                message: 'User is not logged in'
+        try {
+
+            const userId =
+                req.session.userId;
+
+            const senderId =
+                req.params.id;
+
+
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
+            }
+
+
+            const user =
+                await User.findById(userId);
+
+            const sender =
+                await User.findById(senderId);
+
+
+            if (!user || !sender) {
+
+                return res.status(404).json({
+                    message: 'User not found'
+                });
+            }
+
+
+            const requestExists =
+                user.friendRequestsReceived?.some(
+                    id =>
+                        id.toString() ===
+                        senderId.toString()
+                );
+
+
+            if (!requestExists) {
+
+                return res.status(400).json({
+                    message:
+                        'Friend request not found'
+                });
+            }
+
+
+            // מוסיף כל משתמש לרשימת החברים של השני
+            const userAlreadyFriend =
+                user.friends.some(
+                    id =>
+                        id.toString() ===
+                        senderId.toString()
+                );
+
+            const senderAlreadyFriend =
+                sender.friends.some(
+                    id =>
+                        id.toString() ===
+                        userId.toString()
+                );
+
+
+            if (!userAlreadyFriend) {
+                user.friends.push(
+                    senderId
+                );
+            }
+
+
+            if (!senderAlreadyFriend) {
+                sender.friends.push(
+                    userId
+                );
+            }
+
+
+            user.friendRequestsReceived =
+                user.friendRequestsReceived.filter(
+                    id =>
+                        id.toString() !==
+                        senderId.toString()
+                );
+
+
+            sender.friendRequestsSent =
+                sender.friendRequestsSent.filter(
+                    id =>
+                        id.toString() !==
+                        userId.toString()
+                );
+
+
+            await Promise.all([
+                user.save(),
+                sender.save()
+            ]);
+
+
+            await Notification.deleteMany({
+                recipient: userId,
+                sender: senderId,
+                type: 'friend'
             });
-        }
 
-        const user = await User.findById(userId);
-        const sender = await User.findById(senderId);
 
-        if (!user || !sender) {
-            return res.status(404).json({
-                message: 'User not found'
+            res.status(200).json({
+                message:
+                    'Friend request accepted successfully'
             });
-        }
 
-        user.friendRequestsReceived =
-            user.friendRequestsReceived.filter(
-                id => id.toString() !== senderId.toString()
+
+        } catch (error) {
+
+            console.error(
+                'ACCEPT FRIEND REQUEST ERROR:',
+                error
             );
 
-        sender.friendRequestsSent =
-            sender.friendRequestsSent.filter(
-                id => id.toString() !== userId.toString()
+
+            res.status(500).json({
+                message:
+                    'Error accepting friend request',
+                error: error.message
+            });
+        }
+    };
+
+
+const rejectFriendRequest =
+    async (req, res) => {
+
+        try {
+
+            const userId =
+                req.session.userId;
+
+            const senderId =
+                req.params.id;
+
+
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
+            }
+
+
+            const user =
+                await User.findById(userId);
+
+            const sender =
+                await User.findById(senderId);
+
+
+            if (!user || !sender) {
+
+                return res.status(404).json({
+                    message: 'User not found'
+                });
+            }
+
+
+            user.friendRequestsReceived =
+                user.friendRequestsReceived.filter(
+                    id =>
+                        id.toString() !==
+                        senderId.toString()
+                );
+
+
+            sender.friendRequestsSent =
+                sender.friendRequestsSent.filter(
+                    id =>
+                        id.toString() !==
+                        userId.toString()
+                );
+
+
+            await Promise.all([
+                user.save(),
+                sender.save()
+            ]);
+
+
+            // מוחק גם את ההתראה של בקשת החברות
+            await Notification.deleteMany({
+                recipient: userId,
+                sender: senderId,
+                type: 'friend'
+            });
+
+
+            res.status(200).json({
+                message:
+                    'Friend request rejected'
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                'REJECT FRIEND REQUEST ERROR:',
+                error
             );
 
-        await user.save();
-        await sender.save();
-
-        res.status(200).json({
-            message: 'Friend request rejected'
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error rejecting friend request',
-            error: error.message
-        });
-    }
-};
+            res.status(500).json({
+                message:
+                    'Error rejecting friend request',
+                error: error.message
+            });
+        }
+    };
 
 
 const addFriend = async (req, res) => {
     try {
-        const userId = req.session.userId;
-        const friendId = req.params.id;
+
+        const userId =
+            req.session.userId;
+
+        const friendId =
+            req.params.id;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        if (userId.toString() === friendId.toString()) {
+
+        if (
+            userId.toString() ===
+            friendId.toString()
+        ) {
+
             return res.status(400).json({
-                message: 'You cannot add yourself as a friend'
+                message:
+                    'You cannot add yourself as a friend'
             });
         }
 
-        const user = await User.findById(userId);
-        const friend = await User.findById(friendId);
+
+        const user =
+            await User.findById(userId);
+
+        const friend =
+            await User.findById(friendId);
+
 
         if (!user || !friend) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        const alreadyFriends = user.friends.some(
-            id => id.toString() === friendId.toString()
-        );
+
+        const alreadyFriends =
+            user.friends.some(
+                id =>
+                    id.toString() ===
+                    friendId.toString()
+            );
+
 
         if (alreadyFriends) {
+
             return res.status(400).json({
-                message: 'Users are already friends'
+                message:
+                    'Users are already friends'
             });
         }
+
 
         const alreadySent =
             user.friendRequestsSent?.some(
-                id => id.toString() === friendId.toString()
+                id =>
+                    id.toString() ===
+                    friendId.toString()
             );
 
+
         if (alreadySent) {
+
             return res.status(400).json({
-                message: 'Friend request already sent'
+                message:
+                    'Friend request already sent'
             });
         }
+
 
         const alreadyReceived =
             user.friendRequestsReceived?.some(
-                id => id.toString() === friendId.toString()
+                id =>
+                    id.toString() ===
+                    friendId.toString()
             );
 
+
         if (alreadyReceived) {
+
             return res.status(400).json({
-                message: 'This user already sent you a friend request'
+                message:
+                    'This user already sent you a friend request'
             });
         }
 
-        user.friendRequestsSent.push(friendId);
-        friend.friendRequestsReceived.push(userId);
 
-        await user.save();
-        await friend.save();
+        user.friendRequestsSent.push(
+            friendId
+        );
+
+        friend.friendRequestsReceived.push(
+            userId
+        );
+
+
+        await Promise.all([
+            user.save(),
+            friend.save()
+        ]);
+
 
         await Notification.create({
             recipient: friendId,
@@ -348,37 +534,71 @@ const addFriend = async (req, res) => {
             type: 'friend'
         });
 
+
         res.status(200).json({
-            message: 'Friend request sent successfully'
+            message:
+                'Friend request sent successfully'
         });
 
+
     } catch (error) {
+
+        console.error(
+            'SEND FRIEND REQUEST ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error sending friend request',
+            message:
+                'Error sending friend request',
             error: error.message
         });
     }
 };
 
+
 const getUsers = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const users = await User.find({
-            _id: { $ne: userId }
-        }).select('username firstName lastName city profileImage friends birthday');
 
-        res.status(200).json(users);
+        const users =
+            await User.find({
+                _id: {
+                    $ne: userId
+                }
+            })
+                .select(
+                    'username firstName lastName city profileImage friends birthday'
+                );
+
+
+        res.status(200).json(
+            users
+        );
+
 
     } catch (error) {
+
+        console.error(
+            'Error getting users:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error getting users',
+            message:
+                'Error getting users',
             error: error.message
         });
     }
@@ -387,287 +607,516 @@ const getUsers = async (req, res) => {
 
 const removeFriend = async (req, res) => {
     try {
-        const userId = req.session.userId;
-        const friendId = req.params.id;
+
+        const userId =
+            req.session.userId;
+
+        const friendId =
+            req.params.id;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId);
-        const friend = await User.findById(friendId);
+
+        const user =
+            await User.findById(userId);
+
+        const friend =
+            await User.findById(friendId);
+
 
         if (!user || !friend) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        user.friends = user.friends.filter(
-            id => id.toString() !== friendId.toString()
-        );
 
-        friend.friends = friend.friends.filter(
-            id => id.toString() !== userId.toString()
-        );
+        user.friends =
+            user.friends.filter(
+                id =>
+                    id.toString() !==
+                    friendId.toString()
+            );
 
-        await user.save();
-        await friend.save();
+
+        friend.friends =
+            friend.friends.filter(
+                id =>
+                    id.toString() !==
+                    userId.toString()
+            );
+
+
+        await Promise.all([
+            user.save(),
+            friend.save()
+        ]);
+
 
         res.status(200).json({
-            message: 'Friend removed successfully'
+            message:
+                'Friend removed successfully'
         });
 
+
     } catch (error) {
+
+        console.error(
+            'REMOVE FRIEND ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error removing friend',
+            message:
+                'Error removing friend',
             error: error.message
         });
     }
 };
+
 
 const updateProfile = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const { firstName, lastName, city , birthday, profileImage,
-                coverImage} = req.body;
 
-        const user = await User.findByIdAndUpdate(
-            userId,
-            {
-                
-              firstName,
-              lastName,
-              city,
-              ...(birthday !== undefined && { birthday }),
-              ...(profileImage !== undefined && { profileImage }),
-             ...(coverImage !== undefined && { coverImage })
+        const {
+            firstName,
+            lastName,
+            city,
+            birthday,
+            profileImage,
+            coverImage
+        } = req.body;
 
-             },
-           
-            {
-                new: true,
-                runValidators: true
-            }
-        ).select('-password');
+
+        const updateData = {
+            firstName,
+            lastName,
+            city
+        };
+
+
+        if (birthday !== undefined) {
+            updateData.birthday =
+                birthday;
+        }
+
+        if (profileImage !== undefined) {
+            updateData.profileImage =
+                profileImage;
+        }
+
+        if (coverImage !== undefined) {
+            updateData.coverImage =
+                coverImage;
+        }
+
+
+        const user =
+            await User.findByIdAndUpdate(
+                userId,
+                updateData,
+                {
+                    new: true,
+                    runValidators: true
+                }
+            )
+                .select('-password');
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
+
         res.status(200).json({
-            message: 'Profile updated successfully',
-            user
+            message:
+                'Profile updated successfully',
+            user: user
         });
 
+
     } catch (error) {
+
+        console.error(
+            'UPDATE PROFILE ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error updating profile',
+            message:
+                'Error updating profile',
             error: error.message
         });
     }
 };
+
 
 const getMyFriends = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId)
-            .populate(
-                'friends',
-                'username firstName lastName city profileImage birthday'
-            );
+
+        const user =
+            await User.findById(userId)
+                .populate(
+                    'friends',
+                    'username firstName lastName city profileImage birthday'
+                );
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        res.status(200).json(user.friends);
+
+        res.status(200).json(
+            user.friends
+        );
+
 
     } catch (error) {
+
+        console.error(
+            'Error getting friends:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error getting friends',
+            message:
+                'Error getting friends',
             error: error.message
         });
     }
 };
+
 
 const getUserById = async (req, res) => {
     try {
-        const userId = req.params.id;
 
-        const user = await User.findById(userId).select(
-            'username firstName lastName city birthday friends profileImage coverImage'
+        const userId =
+            req.params.id;
+
+
+        const user =
+            await User.findById(userId)
+                .select(
+                    'username firstName lastName city birthday friends profileImage coverImage'
+                );
+
+
+        if (!user) {
+
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+
+        res.status(200).json(
+            user
         );
 
-        if (!user) {
-            return res.status(404).json({
-                message: 'User not found'
-            });
-        }
-
-        res.status(200).json(user);
 
     } catch (error) {
+
+        console.error(
+            'Error getting user:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error getting user',
+            message:
+                'Error getting user',
             error: error.message
         });
     }
 };
 
 
-const getFriendsByUserId = async (req, res) => {
-    try {
-        const userId = req.params.id;
+const getFriendsByUserId =
+    async (req, res) => {
 
-        const user = await User.findById(userId)
-            .populate(
-                'friends',
-                'username firstName lastName city profileImage'
+        try {
+
+            const userId =
+                req.params.id;
+
+
+            const user =
+                await User.findById(userId)
+                    .populate(
+                        'friends',
+                        'username firstName lastName city profileImage'
+                    );
+
+
+            if (!user) {
+
+                return res.status(404).json({
+                    message: 'User not found'
+                });
+            }
+
+
+            res.status(200).json(
+                user.friends
             );
 
-        if (!user) {
-            return res.status(404).json({
-                message: 'User not found'
+
+        } catch (error) {
+
+            console.error(
+                'Error getting user friends:',
+                error
+            );
+
+            res.status(500).json({
+                message:
+                    'Error getting user friends',
+                error: error.message
             });
         }
-
-        res.status(200).json(user.friends);
-
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error getting user friends',
-            error: error.message
-        });
-    }
-};
+    };
 
 
-const uploadProfileImage = async (req, res) => {
-    try {
-        const userId = req.session.userId;
+const uploadProfileImage =
+    async (req, res) => {
 
-        if (!userId) {
-            return res.status(401).json({
-                message: 'User is not logged in'
-            });
-        }
+        try {
 
-        if (!req.file) {
-            return res.status(400).json({
-                message: 'No image uploaded'
-            });
-        }
+            const userId =
+                req.session.userId;
 
-        const imagePath = `/uploads/${req.file.filename}`;
 
-        const user = await User.findByIdAndUpdate(
-            userId,
-            {
-                profileImage: imagePath
-            },
-            {
-                new: true
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
             }
-        ).select('-password');
 
-        res.status(200).json({
-            message: 'Profile image updated successfully',
-            profileImage: user.profileImage
-        });
 
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error uploading profile image',
-            error: error.message
-        });
-    }
-};
+            if (!req.file) {
+
+                return res.status(400).json({
+                    message:
+                        'No image uploaded'
+                });
+            }
+
+
+            const imagePath =
+                `/uploads/${req.file.filename}`;
+
+
+            const user =
+                await User.findByIdAndUpdate(
+                    userId,
+                    {
+                        profileImage:
+                            imagePath
+                    },
+                    {
+                        new: true
+                    }
+                )
+                    .select('-password');
+
+
+            if (!user) {
+
+                return res.status(404).json({
+                    message:
+                        'User not found'
+                });
+            }
+
+
+            res.status(200).json({
+                message:
+                    'Profile image updated successfully',
+                profileImage:
+                    user.profileImage
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                'UPLOAD PROFILE IMAGE ERROR:',
+                error
+            );
+
+            res.status(500).json({
+                message:
+                    'Error uploading profile image',
+                error: error.message
+            });
+        }
+    };
+
+
 const logout = (req, res) => {
-    req.session.destroy(error => {
-        if (error) {
-            return res.status(500).json({
-                message: 'Error logging out'
-            });
-        }
 
-        res.clearCookie('connect.sid');
+    req.session.destroy(
+        error => {
 
-        res.status(200).json({
-            message: 'Logged out successfully'
-        });
-    });
-};
+            if (error) {
 
-const uploadCoverImage = async (req, res) => {
-    try {
-        const userId = req.session.userId;
-
-        if (!userId) {
-            return res.status(401).json({
-                message: 'User is not logged in'
-            });
-        }
-
-        if (!req.file) {
-            return res.status(400).json({
-                message: 'No image uploaded'
-            });
-        }
-
-        const imagePath = `/uploads/${req.file.filename}`;
-
-        const user = await User.findByIdAndUpdate(
-            userId,
-            {
-                coverImage: imagePath
-            },
-            {
-                new: true
+                return res.status(500).json({
+                    message:
+                        'Error logging out'
+                });
             }
-        ).select('-password');
 
-        res.status(200).json({
-            message: 'Cover image updated successfully',
-            coverImage: user.coverImage
-        });
 
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error uploading cover image',
-            error: error.message
-        });
-    }
+            res.clearCookie(
+                'connect.sid'
+            );
+
+
+            res.status(200).json({
+                message:
+                    'Logged out successfully'
+            });
+        }
+    );
 };
 
 
-const searchUsers = async (req, res) => {
+const uploadCoverImage =
+    async (req, res) => {
+
+        try {
+
+            const userId =
+                req.session.userId;
+
+
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
+            }
+
+
+            if (!req.file) {
+
+                return res.status(400).json({
+                    message:
+                        'No image uploaded'
+                });
+            }
+
+
+            const imagePath =
+                `/uploads/${req.file.filename}`;
+
+
+            const user =
+                await User.findByIdAndUpdate(
+                    userId,
+                    {
+                        coverImage:
+                            imagePath
+                    },
+                    {
+                        new: true
+                    }
+                )
+                    .select('-password');
+
+
+            if (!user) {
+
+                return res.status(404).json({
+                    message:
+                        'User not found'
+                });
+            }
+
+
+            res.status(200).json({
+                message:
+                    'Cover image updated successfully',
+                coverImage:
+                    user.coverImage
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                'UPLOAD COVER IMAGE ERROR:',
+                error
+            );
+
+            res.status(500).json({
+                message:
+                    'Error uploading cover image',
+                error: error.message
+            });
+        }
+    };
+
+    const searchUsers = async (req, res) => {
     try {
-        const { q, name, username, city } = req.query;
+
+        const {
+            q,
+            name,
+            username,
+            city
+        } = req.query;
+
 
         let filter = {};
 
+
+        // חיפוש כללי לפי שם, משתמש או עיר
         if (q) {
+
             filter = {
                 $or: [
                     {
@@ -696,8 +1145,11 @@ const searchUsers = async (req, res) => {
                     }
                 ]
             };
+
         } else {
+
             if (name) {
+
                 filter.$or = [
                     {
                         firstName: {
@@ -714,14 +1166,18 @@ const searchUsers = async (req, res) => {
                 ];
             }
 
+
             if (username) {
+
                 filter.username = {
                     $regex: username,
                     $options: 'i'
                 };
             }
 
+
             if (city) {
+
                 filter.city = {
                     $regex: city,
                     $options: 'i'
@@ -729,62 +1185,108 @@ const searchUsers = async (req, res) => {
             }
         }
 
-        const users = await User.find(filter)
-            .select(
-                'username firstName lastName city profileImage'
-            )
-            .limit(20);
 
-        res.status(200).json(users);
+        const users =
+            await User.find(filter)
+                .select(
+                    'username firstName lastName city profileImage'
+                )
+                .limit(20);
+
+
+        res.status(200).json(
+            users
+        );
+
 
     } catch (error) {
+
+        console.error(
+            'SEARCH USERS ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error searching users',
+            message:
+                'Error searching users',
             error: error.message
         });
     }
 };
 
+
 const savePost = async (req, res) => {
     try {
-        const userId = req.session.userId;
-        const postId = req.params.postId;
+
+        const userId =
+            req.session.userId;
+
+        const postId =
+            req.params.postId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId);
+
+        const user =
+            await User.findById(userId);
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        const alreadySaved = user.savedPosts.some(
-            id => id.toString() === postId.toString()
-        );
+
+        const alreadySaved =
+            user.savedPosts.some(
+                id =>
+                    id.toString() ===
+                    postId.toString()
+            );
+
 
         if (alreadySaved) {
+
             return res.status(400).json({
-                message: 'Post already saved'
+                message:
+                    'Post already saved'
             });
         }
 
-        user.savedPosts.push(postId);
+
+        user.savedPosts.push(
+            postId
+        );
+
 
         await user.save();
 
+
         res.status(200).json({
-            message: 'Post saved successfully'
+            message:
+                'Post saved successfully'
         });
 
+
     } catch (error) {
+
+        console.error(
+            'SAVE POST ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error saving post',
+            message:
+                'Error saving post',
             error: error.message
         });
     }
@@ -793,36 +1295,62 @@ const savePost = async (req, res) => {
 
 const unsavePost = async (req, res) => {
     try {
-        const userId = req.session.userId;
-        const postId = req.params.postId;
+
+        const userId =
+            req.session.userId;
+
+        const postId =
+            req.params.postId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId);
+
+        const user =
+            await User.findById(userId);
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        user.savedPosts = user.savedPosts.filter(
-            id => id.toString() !== postId.toString()
-        );
+
+        user.savedPosts =
+            user.savedPosts.filter(
+                id =>
+                    id.toString() !==
+                    postId.toString()
+            );
+
 
         await user.save();
 
+
         res.status(200).json({
-            message: 'Post removed from saved posts'
+            message:
+                'Post removed from saved posts'
         });
 
+
     } catch (error) {
+
+        console.error(
+            'UNSAVE POST ERROR:',
+            error
+        );
+
         res.status(500).json({
-            message: 'Error removing saved post',
+            message:
+                'Error removing saved post',
             error: error.message
         });
     }
@@ -831,152 +1359,270 @@ const unsavePost = async (req, res) => {
 
 const getSavedPosts = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId)
-            .populate({
-                path: 'savedPosts',
-                populate: [
-                    {
-                        path: 'author',
-                        select: 'username firstName lastName profileImage'
-                    },
-                    {
-                        path: 'group',
-                        select: 'name'
-                    }
-                ]
-            });
+
+        // מביא את הפוסטים השמורים יחד עם פרטי הכותב והקבוצה
+        const user =
+            await User.findById(userId)
+                .populate({
+                    path: 'savedPosts',
+
+                    populate: [
+                        {
+                            path: 'author',
+                            select:
+                                'username firstName lastName profileImage'
+                        },
+                        {
+                            path: 'group',
+                            select: 'name'
+                        }
+                    ]
+                });
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        const savedPosts = user.savedPosts
-            .filter(post => post !== null)
-            .reverse();
 
-        res.status(200).json(savedPosts);
+        const savedPosts =
+            user.savedPosts
+                .filter(
+                    post =>
+                        post !== null
+                )
+                .reverse();
 
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error getting saved posts',
-            error: error.message
-        });
-    }
-};
- 
 
-const cancelFriendRequest = async (req, res) => {
-    try {
-        const userId = req.session.userId;
-        const friendId = req.params.id;
+        res.status(200).json(
+            savedPosts
+        );
 
-        if (!userId) {
-            return res.status(401).json({
-                message: 'User is not logged in'
-            });
-        }
-
-        const user = await User.findById(userId);
-        const friend = await User.findById(friendId);
-
-        if (!user || !friend) {
-            return res.status(404).json({
-                message: 'User not found'
-            });
-        }
-
-        const requestExists =
-            user.friendRequestsSent?.some(
-                id => id.toString() === friendId.toString()
-            );
-
-        if (!requestExists) {
-            return res.status(400).json({
-                message: 'Friend request not found'
-            });
-        }
-
-        user.friendRequestsSent =
-            user.friendRequestsSent.filter(
-                id => id.toString() !== friendId.toString()
-            );
-
-        friend.friendRequestsReceived =
-            friend.friendRequestsReceived.filter(
-                id => id.toString() !== userId.toString()
-            );
-
-        await user.save();
-        await friend.save();
-
-        await Notification.deleteMany({
-            recipient: friendId,
-            sender: userId,
-            type: 'friend'
-        });
-
-        res.status(200).json({
-            message: 'Friend request cancelled'
-        });
 
     } catch (error) {
+
         console.error(
-            'CANCEL FRIEND REQUEST ERROR:',
+            'GET SAVED POSTS ERROR:',
             error
         );
 
         res.status(500).json({
-            message: 'Error cancelling friend request',
+            message:
+                'Error getting saved posts',
             error: error.message
         });
     }
 };
 
+
+const cancelFriendRequest =
+    async (req, res) => {
+
+        try {
+
+            const userId =
+                req.session.userId;
+
+            const friendId =
+                req.params.id;
+
+
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
+            }
+
+
+            const user =
+                await User.findById(userId);
+
+            const friend =
+                await User.findById(friendId);
+
+
+            if (!user || !friend) {
+
+                return res.status(404).json({
+                    message: 'User not found'
+                });
+            }
+
+
+            const requestExists =
+                user.friendRequestsSent?.some(
+                    id =>
+                        id.toString() ===
+                        friendId.toString()
+                );
+
+
+            if (!requestExists) {
+
+                return res.status(400).json({
+                    message:
+                        'Friend request not found'
+                });
+            }
+
+
+            user.friendRequestsSent =
+                user.friendRequestsSent.filter(
+                    id =>
+                        id.toString() !==
+                        friendId.toString()
+                );
+
+
+            friend.friendRequestsReceived =
+                friend.friendRequestsReceived.filter(
+                    id =>
+                        id.toString() !==
+                        userId.toString()
+                );
+
+
+            await Promise.all([
+                user.save(),
+                friend.save()
+            ]);
+
+
+            await Notification.deleteMany({
+                recipient: friendId,
+                sender: userId,
+                type: 'friend'
+            });
+
+
+            res.status(200).json({
+                message:
+                    'Friend request cancelled'
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                'CANCEL FRIEND REQUEST ERROR:',
+                error
+            );
+
+
+            res.status(500).json({
+                message:
+                    'Error cancelling friend request',
+                error: error.message
+            });
+        }
+    };
+
+
 const deleteUser = async (req, res) => {
     try {
-        const userId = req.session.userId;
+
+        const userId =
+            req.session.userId;
+
 
         if (!userId) {
+
             return res.status(401).json({
-                message: 'User is not logged in'
+                message:
+                    'User is not logged in'
             });
         }
 
-        const user = await User.findById(userId);
+
+        const user =
+            await User.findById(userId);
+
 
         if (!user) {
+
             return res.status(404).json({
                 message: 'User not found'
             });
         }
 
-        await User.findByIdAndDelete(userId);
 
-        req.session.destroy(error => {
-
-            if (error) {
-                console.error(
-                    'SESSION DESTROY ERROR:',
-                    error
-                );
+        // מסיר את המשתמש גם מרשימות של משתמשים אחרים
+        await User.updateMany(
+            {},
+            {
+                $pull: {
+                    friends: userId,
+                    friendRequestsSent: userId,
+                    friendRequestsReceived: userId
+                }
             }
+        );
 
-            res.clearCookie('connect.sid');
 
-            res.status(200).json({
-                message: 'User deleted successfully'
-            });
+        await Notification.deleteMany({
+            $or: [
+                {
+                    recipient: userId
+                },
+                {
+                    sender: userId
+                }
+            ]
         });
+
+
+        await User.findByIdAndDelete(
+            userId
+        );
+
+
+        req.session.destroy(
+            error => {
+
+                if (error) {
+
+                    console.error(
+                        'SESSION DESTROY ERROR:',
+                        error
+                    );
+
+                    return res.status(500).json({
+                        message:
+                            'User deleted but session could not be closed'
+                    });
+                }
+
+
+                res.clearCookie(
+                    'connect.sid'
+                );
+
+
+                res.status(200).json({
+                    message:
+                        'User deleted successfully'
+                });
+            }
+        );
+
 
     } catch (error) {
 
@@ -985,71 +1631,149 @@ const deleteUser = async (req, res) => {
             error
         );
 
+
         res.status(500).json({
-            message: 'Error deleting user',
+            message:
+                'Error deleting user',
             error: error.message
         });
     }
 };
 
-const getUsersCountByCity = async (req, res) => {
-    try {
 
-        const result = await User.aggregate([
+const getUsersCountByCity =
+    async (req, res) => {
 
-            // רק משתמשים שיש להם עיר
-            {
-                $match: {
+        try {
+
+            // סופר כמה משתמשים רשומים בכל עיר
+            const result =
+                await User.aggregate([
+                    {
+                        $match: {
+                            city: {
+                                $exists: true,
+                                $ne: ''
+                            }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: '$city',
+                            usersCount: {
+                                $sum: 1
+                            }
+                        }
+                    },
+                    {
+                        $sort: {
+                            usersCount: -1
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            city: '$_id',
+                            usersCount: 1
+                        }
+                    }
+                ]);
+
+
+            res.status(200).json(
+                result
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                'USERS COUNT BY CITY ERROR:',
+                error
+            );
+
+
+            res.status(500).json({
+                message:
+                    'Error getting users count by city',
+                error: error.message
+            });
+        }
+    };
+
+
+const getUsersForMap =
+    async (req, res) => {
+
+        try {
+
+            const userId =
+                req.session.userId;
+
+
+            if (!userId) {
+
+                return res.status(401).json({
+                    message:
+                        'User is not logged in'
+                });
+            }
+
+
+            const currentUser =
+                await User.findById(
+                    userId
+                );
+
+
+            if (!currentUser) {
+
+                return res.status(404).json({
+                    message:
+                        'User not found'
+                });
+            }
+
+
+            // במפה מוצגים רק חברים שיש להם עיר
+            const friends =
+                await User.find({
+                    _id: {
+                        $in:
+                            currentUser.friends
+                    },
+
                     city: {
                         $exists: true,
                         $ne: ''
                     }
-                }
-            },
+                })
+                    .select(
+                        'firstName lastName username city profileImage'
+                    );
 
-            // GroupBy לפי עיר
-            {
-                $group: {
-                    _id: '$city',
-                    usersCount: {
-                        $sum: 1
-                    }
-                }
-            },
 
-            // מסדר מהעיר עם הכי הרבה משתמשים
-            {
-                $sort: {
-                    usersCount: -1
-                }
-            },
+            res.status(200).json(
+                friends
+            );
 
-            // מבנה התוצאה
-            {
-                $project: {
-                    _id: 0,
-                    city: '$_id',
-                    usersCount: 1
-                }
-            }
 
-        ]);
+        } catch (error) {
 
-        res.status(200).json(result);
+            console.error(
+                'GET FRIENDS FOR MAP ERROR:',
+                error
+            );
 
-    } catch (error) {
 
-        console.error(
-            'USERS COUNT BY CITY ERROR:',
-            error
-        );
+            res.status(500).json({
+                message:
+                    'Error getting friends for map',
+                error: error.message
+            });
+        }
+    };
 
-        res.status(500).json({
-            message: 'Error getting users count by city',
-            error: error.message
-        });
-    }
-};
 
 module.exports = {
     createUser,
@@ -1073,5 +1797,6 @@ module.exports = {
     addFriend,
     cancelFriendRequest,
     deleteUser,
-    getUsersCountByCity
+    getUsersCountByCity,
+    getUsersForMap
 };

@@ -40,6 +40,7 @@ router.get('/users', userController.getUsers);
 router.delete('/users/:id/friend', userController.removeFriend);
 router.put('/profile', userController.updateProfile);
 router.get('/my-friends', userController.getMyFriends);
+router.get('/users/map',userController.getUsersForMap);
 router.get('/users/:id', userController.getUserById);
 router.get('/users/:id/friends', userController.getFriendsByUserId);
 router.post('/profile-image', upload.single('profileImage'),userController.uploadProfileImage);
