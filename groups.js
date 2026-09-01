@@ -212,7 +212,7 @@ async function loadGroups() {
                         class="text-decoration-none"
                     >
                         <img
-                            src="${group.image || 'harel.jpg'}"
+                            src="${group.image || 'facebookprofile.jpeg'}"
                             alt="Group"
                             class="rounded-circle"
                             width="55"
@@ -374,7 +374,7 @@ async function loadMyGroups() {
                 >
 
                     <img
-                        src="${group.image || 'harel.jpg'}"
+                        src="${group.image || 'facebookprofile.jpeg'}"
                         alt="Group"
                         class="rounded-circle"
                         width="55"
@@ -603,7 +603,7 @@ async function loadGroupsFeed() {
                             class="text-decoration-none"
                         >
                             <img
-                                src="${post.author?.profileImage || 'harel.jpg'}"
+                                src="${post.author?.profileImage || 'facebookprofile.jpeg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="45"
@@ -898,7 +898,7 @@ if (
 
                     groupElement.innerHTML = `
                         <img
-                            src="${group.image || 'harel.jpg'}"
+                            src="${group.image || 'facebookprofile.jpeg'}"
                             alt="Group"
                             class="rounded-circle"
                             width="50"

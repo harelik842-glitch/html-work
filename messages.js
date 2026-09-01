@@ -75,7 +75,7 @@ const conversations =
                 <div class="d-flex align-items-center gap-3">
 
                     <img
-                        src="${user.profileImage || 'harel.jpg'}"
+                        src="${user.profileImage || 'facebookprofile.jpeg'}"
                         alt="Profile"
                         class="rounded-circle"
                         width="50"
@@ -122,7 +122,7 @@ const conversations =
     document.getElementById('conversationArea').style.display = 'block';
 
     document.getElementById('conversationUserImage').src =
-        user.profileImage || 'harel.jpg';
+        user.profileImage || 'facebookprofile.jpeg';
 
     document.getElementById('conversationUserName').textContent =
         `${user.firstName || ''} ${user.lastName || ''}`;
@@ -368,7 +368,7 @@ async function openConversationFromUrl() {
         document.getElementById('conversationArea').style.display = 'block';
 
         document.getElementById('conversationUserImage').src =
-            user.profileImage || 'harel.jpg';
+            user.profileImage || 'facebookprofile.jpeg';
 
         document.getElementById('conversationUserName').textContent =
             `${user.firstName || ''} ${user.lastName || ''}`;

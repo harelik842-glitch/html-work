@@ -215,7 +215,7 @@ async function loadBirthdays() {
                         <div class="d-flex align-items-center gap-3">
 
                             <img
-                                src="${friend.profileImage || 'harel.jpg'}"
+                                src="${friend.profileImage || 'facebookprofile.jpeg'}"
                                 class="rounded-circle"
                                 width="60"
                                 height="60"

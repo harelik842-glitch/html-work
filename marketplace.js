@@ -300,7 +300,7 @@ async function loadMarketplaceItems() {
             itemElement.innerHTML = `
 
                 <img
-                    src="${item.image || 'harel.jpg'}"
+                    src="${item.image || 'facebookprofile.jpeg'}"
                     alt="${item.name || 'Product'}"
                     class="marketplace-item-image"
                 >
@@ -431,7 +431,7 @@ function openMarketplaceItem(item) {
         'modalItemImage'
     ).src =
         item.image ||
-        'harel.jpg';
+        'facebookprofile.jpeg';
 
 
 
@@ -439,7 +439,7 @@ function openMarketplaceItem(item) {
         'modalSellerImage'
     ).src =
         item.seller?.profileImage ||
-        'harel.jpg';
+        'facebookprofile.jpeg';
 
 
 

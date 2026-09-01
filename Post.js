@@ -162,7 +162,7 @@ async function loadPosts() {
 
                         <a href="profile.html?userId=${post.author?._id}">
                             <img
-                                src="${post.author?.profileImage || 'harel.jpg'}"
+                                src="${post.author?.profileImage || 'facebookprofile.jpeg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="45"
@@ -257,7 +257,7 @@ ${
                             class="text-decoration-none"
                         >
                             <img
-                                src="${post.sharedPost.author?.profileImage || 'harel.jpg'}"
+                                src="${post.sharedPost.author?.profileImage || 'facebookprofile.jpwg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="42"
@@ -739,7 +739,7 @@ if (editButton) {
 
                                 <a href="profile.html?userId=${comment.author?._id}">
                                     <img
-                                        src="${comment.author?.profileImage || 'harel.jpg'}"
+                                        src="${comment.author?.profileImage || 'facebookprofile.jpeg'}"
                                         alt="Profile"
                                         class="rounded-circle"
                                         width="35"
@@ -1574,7 +1574,7 @@ async function loadTodayBirthdays() {
                     <img
                         src="${
                             firstFriend.profileImage ||
-                            'harel.jpg'
+                            'facebookprofile.jpeg'
                         }"
                         alt="Profile"
                         class="rounded-circle"
@@ -1605,7 +1605,7 @@ async function loadTodayBirthdays() {
                     <img
                         src="${
                             firstFriend.profileImage ||
-                            'harel.jpg'
+                            'facebookprofile.jpeg'
                         }"
                         alt="Profile"
                         class="rounded-circle"

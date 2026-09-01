@@ -168,7 +168,7 @@ function createSharedNavigation() {
                         >
 
                             <img
-                                src="harel.jpg"
+                                src="facebookprofile.jpeg"
                                 class="rounded-circle current-user-profile-image"
                                 width="42"
                                 height="42"
@@ -225,7 +225,7 @@ function createSharedNavigation() {
             >
 
                 <img
-                    src="harel.jpg"
+                    src="facebookprofile.jpeg"
                     class="rounded-circle current-user-profile-image"
                     width="40"
                     height="40"
@@ -268,7 +268,7 @@ function createSharedNavigation() {
 
 
 
-            <a href="#" class="shared-sidebar-link">
+            <a href="media.html" class="shared-sidebar-link">
                 <i class="bi bi-play-btn-fill"></i>
                 <span>Reels</span>
             </a>
@@ -373,7 +373,7 @@ async function loadNavigationCurrentUser() {
 
                 image.src =
                     navigationCurrentUser.profileImage ||
-                    'harel.jpg';
+                    'facebookprofile.jpeg';
 
             });
 
@@ -505,7 +505,7 @@ function initializeNavigationSearch() {
                         element.innerHTML = `
 
                             <img
-                                src="${user.profileImage || 'harel.jpg'}"
+                                src="${user.profileImage || 'facebookprofile.jpeg'}"
                                 class="rounded-circle"
                                 width="45"
                                 height="45"
@@ -564,7 +564,7 @@ function initializeNavigationSearch() {
                         element.innerHTML = `
 
                             <img
-                                src="${group.image || 'harel.jpg'}"
+                                src="${group.image || 'facebookprofile.jpeg'}"
                                 class="rounded-circle"
                                 width="45"
                                 height="45"
@@ -853,7 +853,7 @@ async function loadNavigationNotifications() {
                 element.innerHTML = `
 
     <img
-        src="${notification.sender?.profileImage || 'harel.jpg'}"
+        src="${notification.sender?.profileImage || 'facebookprofile.jpeg'}"
         class="rounded-circle"
         width="50"
         height="50"

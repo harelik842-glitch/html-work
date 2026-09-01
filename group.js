@@ -59,7 +59,7 @@ async function loadGroup() {
         if (groupProfileImage) {
             groupProfileImage.src =
                 currentGroup.image ||
-                'harel.jpg';
+                'facebookprofile.jpeg';
         }
 
         document.getElementById(
@@ -139,7 +139,7 @@ function renderGroupMembers() {
                 class="d-flex align-items-center gap-3 text-decoration-none text-dark"
             >
                 <img
-                    src="${member.profileImage || 'harel.jpg'}"
+                    src="${member.profileImage || 'facebookprofile.jpeg'}"
                     alt="Profile"
                     class="rounded-circle"
                     width="45"
@@ -475,7 +475,7 @@ async function loadGroupPosts() {
 
                         <a href="profile.html?userId=${post.author?._id}" class="text-decoration-none">
                             <img
-                                src="${post.author?.profileImage || 'harel.jpg'}"
+                                src="${post.author?.profileImage || 'facebookprofile.jpeg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="45"

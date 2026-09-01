@@ -739,7 +739,7 @@ async function loadMyPosts() {
                     <div class="d-flex align-items-center gap-2 mb-3">
 
                         <img
-                            src="${post.author?.profileImage || 'harel.jpg'}"
+                            src="${post.author?.profileImage || 'facebookprofile.jpeg'}"
                             alt="Profile"
                             class="rounded-circle"
                             width="40"
@@ -1355,7 +1355,7 @@ if (friendsTabElement) {
                         >
 
                             <img
-                                src="${friend.profileImage || 'harel.jpg'}"
+                                src="${friend.profileImage || 'facebookprofile.jpeg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="55"
@@ -1783,7 +1783,7 @@ if (groupsTabElement) {
                         >
 
                             <img
-                                src="${group.image || 'harel.jpg'}"
+                                src="${group.image || 'facebookprofile.jpeg'}"
                                 alt="Group"
                                 class="rounded-circle border"
                                 width="60"

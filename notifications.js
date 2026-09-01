@@ -135,7 +135,7 @@ async function loadAllNotifications() {
 
             notificationElement.innerHTML = `
                 <img
-                    src="${notification.sender?.profileImage || 'harel.jpg'}"
+                    src="${notification.sender?.profileImage || 'facebookprofile.jpeg'}"
                     alt="Profile"
                     class="rounded-circle"
                     width="55"

@@ -90,7 +90,7 @@ async function loadVideos() {
 
                         <a href="profile.html?userId=${post.author?._id}">
                             <img
-                                src="${post.author?.profileImage || 'harel.jpg'}"
+                                src="${post.author?.profileImage || 'facebookprofile.jpeg'}"
                                 alt="Profile"
                                 class="rounded-circle"
                                 width="45"

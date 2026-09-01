@@ -91,7 +91,7 @@ async function loadEvents() {
 
             eventElement.innerHTML = `
                 <img
-                    src="${event.image || 'harel.jpg'}"
+                    src="${event.image || 'facebookprofile.jpeg'}"
                     alt="${event.name || 'Event'}"
                     class="event-card-image"
                 >
@@ -176,7 +176,7 @@ function openEventModal(event) {
     document.getElementById(
         'eventModalImage'
     ).src =
-        event.image || 'harel.jpg';
+        event.image || 'facebookprofile.jpeg';
 
     document.getElementById(
         'eventModalDate'
@@ -202,7 +202,7 @@ function openEventModal(event) {
         'eventCreatorImage'
     ).src =
         event.creator?.profileImage ||
-        'harel.jpg';
+        'facebookprofile.jpeg';
 
     document.getElementById(
         'eventCreatorName'
@@ -246,7 +246,7 @@ function openEventModal(event) {
 
         image.src =
             user.profileImage ||
-            'harel.jpg';
+            'facebookprofile.jpeg';
 
         image.className =
             'rounded-circle border';

@@ -205,7 +205,7 @@ async function loadFriendRequests() {
                 >
 
                     <img
-                        src="${user.profileImage || 'harel.jpg'}"
+                        src="${user.profileImage || 'facebookprofile.jpeg'}"
                         alt="Profile"
                         class="rounded-circle"
                         width="60"
@@ -490,7 +490,7 @@ async function loadFriends() {
                 >
 
                     <img
-                        src="${user.profileImage || 'harel.jpg'}"
+                        src="${user.profileImage || 'facebookprofile.jpeg'}"
                         alt="Profile"
                         class="rounded-circle"
                         width="60"
